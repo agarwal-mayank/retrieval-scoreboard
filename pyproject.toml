@@ -1,0 +1,26 @@
+[project]
+name = "retrieval-scoreboard"
+version = "0.1.0"
+description = "Four retrieval methods compete on synthetic IT help articles, scored on hit@5."
+authors = [
+    { name = "agarwal-mayank", email = "14798646+agarwal-mayank@users.noreply.github.com" }
+]
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+scoreboard = "scoreboard:main"
+
+[build-system]
+requires = ["uv_build>=0.12.21,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "scoreboard"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+]
