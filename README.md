@@ -27,12 +27,13 @@ All data is synthetic. No real company or customer data is used.
 
 ## How to run
 
-_Coming in Level 1._ Planned shape:
+Needs [uv](https://docs.astral.sh/uv/). uv installs the pinned Python 3.11 and dependencies for you.
 
 ```powershell
-uv sync                    # install pinned dependencies
-copy .env.example .env     # then add your keys
-uv run python -m scoreboard  # run all methods and print the scoreboard
+uv sync                      # install pinned dependencies
+copy .env.example .env       # then add your keys (needed from Level 2)
+uv run python -m scoreboard  # run the scoreboard
+uv run pytest                # run the tests
 ```
 
 ## Results
