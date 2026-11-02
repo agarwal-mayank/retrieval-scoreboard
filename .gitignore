@@ -1,0 +1,35 @@
+# Secrets: never commit real keys (use .env.example as the template)
+.env
+.env.*
+!.env.example
+
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Build and packaging output
+build/
+dist/
+*.egg-info/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Generated run output (indexes, traces, scratch results)
+runs/
+*.log
+
+# Editor and OS clutter
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store
