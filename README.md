@@ -17,7 +17,7 @@ A small, reproducible benchmark for retrieval-augmented generation (RAG) search.
 
 The arena: 200 synthetic IT help articles and 30 test questions. Each question has one known right answer.
 
-The score: **hit@5**, meaning the share of questions where the right article appears in the top 5 results.
+The score: **hit@5**, meaning the share of questions where the right article appears in the top 5 results. Level 5 adds a second score, **faithfulness**: whether each generated answer is actually supported by the articles it cites.
 
 ## Why
 
@@ -52,8 +52,9 @@ _Placeholder: filled in as each level ships._
 - [ ] **Level 2: Meaning search.** Vector search with embeddings
 - [ ] **Level 3: Keyword search.** BM25
 - [ ] **Level 4: Boss fight.** Hybrid and hybrid + rerank
-- [ ] **Level 5: X-ray vision.** Observability with tracing, latency and cost
-- [ ] **Level 6: Ship it.** Polish, write-up and final results
+- [ ] **Level 5: Answer and cite.** Generate an answer from the retrieved articles, cite the sources, and score whether each answer is supported by what was retrieved (faithfulness)
+- [ ] **Level 6: X-ray vision.** Observability with tracing, latency and cost
+- [ ] **Level 7: Ship it.** Polish, write-up and final results
 
 ## Licence
 
