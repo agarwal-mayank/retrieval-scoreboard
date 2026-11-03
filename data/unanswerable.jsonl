@@ -1,0 +1,1 @@
+{"id": "U01", "question": "I see Guest login trying to log in as admin account and want to prevent this from happening", "why_no_answer": "No self-help article covers stopping guest-to-admin sign-in attempts; this needs the security team.", "expected": "abstain"}
