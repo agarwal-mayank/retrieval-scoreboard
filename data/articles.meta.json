@@ -1,0 +1,77 @@
+{
+  "generated_at": "2026-11-03T01:09:34+00:00",
+  "model": "claude-haiku-5-5",
+  "effort": "low",
+  "temperature": "model default (not settable on this model)",
+  "max_tokens": 16000,
+  "categories": [
+    "Passwords & sign-in",
+    "Multi-factor authentication",
+    "VPN & remote access",
+    "Email & calendar",
+    "Printers & scanning",
+    "Laptops & hardware",
+    "Wi-Fi & network",
+    "Software install & access",
+    "Chat & video meetings",
+    "Security & phishing"
+  ],
+  "batches_per_category": 2,
+  "articles_per_batch": 10,
+  "word_range": [
+    100,
+    300
+  ],
+  "banned_words": [
+    "Microsoft",
+    "Outlook",
+    "Teams",
+    "Office 365",
+    "Windows",
+    "macOS",
+    "Apple",
+    "iPhone",
+    "Android",
+    "Google",
+    "Gmail",
+    "Zoom",
+    "Slack",
+    "Cisco",
+    "Okta",
+    "Duo",
+    "Dell",
+    "Lenovo",
+    "HP",
+    "Citrix",
+    "ServiceNow"
+  ],
+  "system_prompt": "You write internal IT help desk knowledge articles for a fictional company.\nRules:\n- Synthetic content only. Never use real company, product or brand names. Use generic names such as \"the company VPN app\", \"your email app\", \"the chat app\", \"your laptop\", \"the authenticator app\".\n- Each article body is 120 to 250 words, plain text, in this order: \"Symptoms:\", \"Cause:\", \"Steps:\" (numbered), \"Still stuck?\".\n- Write for non-technical staff. Be specific and practical.\n- Every article in a batch covers a different problem.",
+  "user_prompt_template": "Write {n} help articles for the category \"{category}\".\n{avoid}\nReturn each article with a short, specific title and the body.",
+  "avoid_first": "Cover the most common problems in this category.",
+  "avoid_later_template": "These titles already exist in this category:\n{titles}\nDo not repeat them. Cover different problems, but make 3 of your articles close neighbours of existing ones (same area, different problem, e.g. \"won't connect\" vs \"keeps disconnecting\").",
+  "usage": {
+    "requests": 26,
+    "input_tokens": 19337,
+    "output_tokens": 106110
+  },
+  "estimated_cost_usd": 0.055,
+  "price_per_mtok_usd": {
+    "input": 0.1,
+    "output": 0.5
+  },
+  "repairs": [
+    {
+      "id": "KB0112",
+      "reason": "duplicate title of KB0123",
+      "old_title": "Wi-Fi Keeps Disconnecting",
+      "new_title": "Battery Percentage Jumps or Stays Stuck",
+      "repaired_at": "2026-11-03T01:34:55+00:00",
+      "usage": {
+        "requests": 1,
+        "input_tokens": 983,
+        "output_tokens": 1142
+      },
+      "estimated_cost_usd": 0.0007
+    }
+  ]
+}
