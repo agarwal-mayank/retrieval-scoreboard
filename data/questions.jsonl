@@ -1,0 +1,30 @@
+{"id": "Q01", "question": "The password reset email went to my spam folder", "answer_article_id": "KB0011", "type": "easy"}
+{"id": "Q02", "question": "The six-digit number expires before I can finish typing it in", "answer_article_id": "KB0012", "type": "near-twin"}
+{"id": "Q03", "question": "Authenticator app deleted by accident, how do I get my codes back", "answer_article_id": "KB0030", "type": "easy"}
+{"id": "Q04", "question": "My backup codes are rejected at sign-in", "answer_article_id": "KB0028", "type": "easy"}
+{"id": "Q05", "question": "I tap approve on my mobile but the login screen just keeps spinning", "answer_article_id": "KB0033", "type": "paraphrase"}
+{"id": "Q06", "question": "VPN shows a certificate expired error", "answer_article_id": "KB0047", "type": "easy"}
+{"id": "Q07", "question": "Remote access is fine all morning but dies every time I open my laptop after lunch", "answer_article_id": "KB0058", "type": "near-twin"}
+{"id": "Q08", "question": "Using my mobile data shared to the laptop, the company connection never finishes connecting", "answer_article_id": "KB0060", "type": "paraphrase"}
+{"id": "Q09", "question": "Email stuck in the outbox and won't send", "answer_article_id": "KB0080", "type": "easy"}
+{"id": "Q10", "question": "I keep being told I've run out of room for my messages and people say their mail bounces", "answer_article_id": "KB0075", "type": "paraphrase"}
+{"id": "Q11", "question": "Low toner warning will not go away", "answer_article_id": "KB0094", "type": "easy"}
+{"id": "Q12", "question": "The sides of my document are missing when it comes out of the machine", "answer_article_id": "KB0085", "type": "paraphrase"}
+{"id": "Q13", "question": "Everyone else can print but the printer shows as unavailable only on my computer", "answer_article_id": "KB0091", "type": "near-twin"}
+{"id": "Q14", "question": "The battery says 60 percent and a minute later it says 15", "answer_article_id": "KB0112", "type": "near-twin"}
+{"id": "Q15", "question": "My notebook gets really hot and sounds like a jet engine", "answer_article_id": "KB0103", "type": "paraphrase"}
+{"id": "Q16", "question": "Connected to Wi-Fi but no internet", "answer_article_id": "KB0122", "type": "easy"}
+{"id": "Q17", "question": "I see the office network listed two times, which one should I pick?", "answer_article_id": "KB0140", "type": "paraphrase"}
+{"id": "Q18", "question": "Calls are perfect at my desk but stutter when I move to the open-plan seating", "answer_article_id": "KB0136", "type": "near-twin"}
+{"id": "Q19", "question": "The install stops halfway saying my drive has no room left", "answer_article_id": "KB0146", "type": "paraphrase"}
+{"id": "Q20", "question": "I asked for a new program a week ago and it still hasn't been signed off", "answer_article_id": "KB0156", "type": "paraphrase"}
+{"id": "Q21", "question": "Shared mailbox not showing in my email", "answer_article_id": "KB0067", "type": "easy"}
+{"id": "Q22", "question": "Meeting audio comes out of my laptop instead of my headset", "answer_article_id": "KB0168", "type": "paraphrase"}
+{"id": "Q23", "question": "The writing on my badge looks backwards in my own video preview", "answer_article_id": "KB0173", "type": "paraphrase"}
+{"id": "Q24", "question": "The second screen stays dark when I connect my laptop", "answer_article_id": "KB0115", "type": "paraphrase"}
+{"id": "Q25", "question": "The setup window pops up for a second then vanishes and nothing gets installed", "answer_article_id": "KB0155", "type": "paraphrase"}
+{"id": "Q26", "question": "I already entered my work login on a page from a link and now I think it was fake", "answer_article_id": "KB0189", "type": "near-twin"}
+{"id": "Q27", "question": "My password expired and then I was trying to log in. I made too many invalid attempts and now the account is locked out. I am not able to change the password as well.", "answer_article_id": "KB0002", "type": "messy", "also_relevant": ["KB0003"]}
+{"id": "Q28", "question": "During teams call, the video gets very pixelated and many times the sound is coming out of laptop even when I am wearin headphones.", "answer_article_id": "KB0167", "type": "messy", "also_relevant": ["KB0168"]}
+{"id": "Q29", "question": "I got a call from helpdesk operator asking for my account details. What should I do ?", "answer_article_id": "KB0188", "type": "messy"}
+{"id": "Q30", "question": "I found a pen drive labeled finance on the office floor. What should I do ?", "answer_article_id": "KB0190", "type": "messy"}
