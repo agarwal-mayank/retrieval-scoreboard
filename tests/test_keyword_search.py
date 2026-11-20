@@ -1,6 +1,6 @@
-"""Unit tests for the tokenizer. Written before the code."""
+"""Unit tests for the tokenizer (written before the code) and BM25 ranking."""
 
-from scoreboard.keyword_search import STOP_WORDS, tokenize
+from scoreboard.keyword_search import STOP_WORDS, BM25Index, tokenize
 
 
 def test_lowercases_everything():
@@ -37,3 +37,25 @@ def test_only_stop_words_gives_no_words():
 
 def test_stop_word_list_is_lowercase():
     assert all(word == word.lower() for word in STOP_WORDS)
+
+
+# --- BM25 ranking -----------------------------------------------------------------
+
+ARTICLES = [
+    {"id": "KB0001", "title": "Low toner warning", "body": "Replace the toner cartridge in the printer."},
+    {"id": "KB0002", "title": "Forgot my password", "body": "Reset your password from the sign-in page."},
+    {"id": "KB0003", "title": "VPN keeps dropping", "body": "Reconnect the company VPN app on stable Wi-Fi."},
+    {"id": "KB0004", "title": "Mailbox full", "body": "Delete old email and empty the deleted folder."},
+]
+
+
+def test_bm25_finds_the_article_with_the_rare_word():
+    assert BM25Index(ARTICLES).top_k("toner", k=1) == ["KB0001"]
+
+
+def test_bm25_uses_the_tokenizer_on_questions():
+    assert BM25Index(ARTICLES).top_k("My VPN keeps DROPPING!", k=1) == ["KB0003"]
+
+
+def test_bm25_returns_k_ids():
+    assert len(BM25Index(ARTICLES).top_k("password", k=3)) == 3
