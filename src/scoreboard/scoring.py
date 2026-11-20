@@ -27,3 +27,23 @@ def hit_at_k(results: dict[str, list[str]], answers: dict[str, str], k: int = 5)
         if is_hit(ranked, answer_id, k):
             hits += 1
     return hits / len(answers)
+
+
+def mrr(results: dict[str, list[str]], answers: dict[str, str]) -> float:
+    """Mean reciprocal rank, from 0.0 to 1.0: rewards putting the right article higher.
+
+    For each question: 1 / (position of the right article), counting from 1.
+    So rank 1 scores 1, rank 2 scores 0.5, rank 5 scores 0.2.
+    If the right article isn't in that question's results (or the question is
+    missing from results), it scores 0. Then average over all questions.
+    Raise ValueError if answers is empty.
+    """
+    if not answers:
+        raise ValueError("No questions to score")
+    total = 0.0
+    for question_id, answer_id in answers.items():
+        ranked = results.get(question_id, [])
+        if answer_id in ranked:
+            rank = ranked.index(answer_id) + 1
+            total += 1 / rank
+    return total / len(answers)

@@ -2,7 +2,7 @@
 
 import pytest
 
-from scoreboard.scoring import hit_at_k, is_hit
+from scoreboard.scoring import hit_at_k, is_hit, mrr
 
 
 # --- is_hit: one question ---------------------------------------------------
@@ -71,3 +71,42 @@ def test_question_missing_from_results_counts_as_a_miss():
 def test_empty_answer_key_is_an_error():
     with pytest.raises(ValueError):
         hit_at_k({}, {})
+
+
+# --- mrr: rewards ranking the right answer higher ------------------------------
+
+def test_mrr_right_answer_first_scores_one():
+    assert mrr({"Q01": ["KB0001", "KB0009"]}, {"Q01": "KB0001"}) == pytest.approx(1.0)
+
+
+def test_mrr_right_answer_second_scores_a_half():
+    assert mrr({"Q01": ["KB0009", "KB0001"]}, {"Q01": "KB0001"}) == pytest.approx(0.5)
+
+
+def test_mrr_right_answer_fifth_scores_a_fifth():
+    ranked = ["KB0009", "KB0008", "KB0007", "KB0006", "KB0001"]
+    assert mrr({"Q01": ranked}, {"Q01": "KB0001"}) == pytest.approx(0.2)
+
+
+def test_mrr_right_answer_missing_scores_zero():
+    assert mrr({"Q01": ["KB0009", "KB0008"]}, {"Q01": "KB0001"}) == pytest.approx(0.0)
+
+
+def test_mrr_averages_over_questions():
+    results = {
+        "Q01": ["KB0001"],                 # rank 1 -> 1.0
+        "Q02": ["KB0999", "KB0002"],       # rank 2 -> 0.5
+        "Q03": ["KB0999"],                 # missing -> 0.0
+        "Q04": ["KB0999"] * 3 + ["KB0004"],  # rank 4 -> 0.25
+    }
+    assert mrr(results, ANSWERS) == pytest.approx((1 + 0.5 + 0 + 0.25) / 4)
+
+
+def test_mrr_question_missing_from_results_scores_zero():
+    results = {"Q01": ["KB0001"], "Q02": ["KB0002"], "Q03": ["KB0003"]}  # no Q04
+    assert mrr(results, ANSWERS) == pytest.approx(0.75)
+
+
+def test_mrr_empty_answer_key_is_an_error():
+    with pytest.raises(ValueError):
+        mrr({}, {})
