@@ -2,7 +2,7 @@
 
 Four retrieval methods compete to find the right IT help article. One scoreboard shows who wins, how fast, and at what cost.
 
-> Status: ✅ Level 2 shipped (vector search: 100% hit@5, 80% hit@1, MRR 0.874 on exam v1). Next: Level 3, keyword search.
+> Status: 🚧 Level 3 in progress. BM25 keyword search is scored (MRR 0.590 vs vector search's 0.874 on exam v1); next is a harder exam v2 to re-test both.
 
 ## What it is
 
@@ -101,6 +101,17 @@ uv run python scripts/run_vector_search.py    # score the exam: hit@5, hit@1, MR
 
 Results above used `nomic-embed-text` with digest `0a109f422b47`. Articles are embedded as title + body with the `search_document: ` prefix, questions with `search_query: `.
 
+### Keyword search (Level 3)
+
+No Ollama or API key needed:
+
+```powershell
+uv run python scripts/run_bm25_search.py      # BM25 on the exam: hit@5, hit@1, MRR, by question type
+uv run python scripts/compare_methods.py runs/results/vector_nomic-embed-text_0a109f422b47_v1.json runs/results/bm25_v1.json
+```
+
+BM25 uses the standard [rank-bm25](https://pypi.org/project/rank-bm25/) implementation (`BM25Okapi`, default settings) over title + body, with our own tokenizer: lowercase, punctuation splits words, common stop words dropped.
+
 ### Regenerating the data
 
 The article library is already committed. To regenerate it (needs `ANTHROPIC_API_KEY` in `.env`; costs a few cents):
@@ -117,20 +128,25 @@ _Exam v1 (30 questions). Filled in as each level ships. Latency and cost arrive 
 |--------|------:|------:|----:|-----------------:|--------------------:|
 | Random (floor baseline, seed 42) | 0.0% | 0.0% | 0.000 | – | – |
 | Vector (nomic-embed-text, local) | 100.0% | 80.0% | 0.874 | – | $0 (runs locally) |
-| Keyword (BM25) | – | – | – | – | – |
+| Keyword (BM25) | 73.3% | 50.0% | 0.590 | – | $0 (runs locally) |
 | Hybrid | – | – | – | – | – |
 | Hybrid + rerank | – | – | – | – | – |
 
-**Vector search by question type**
+**By question type (MRR)**
 
-| Type | n | hit@5 | hit@1 | MRR |
-|------|--:|------:|------:|----:|
-| Easy | 8 | 100.0% | 100.0% | 1.000 |
-| Paraphrase | 12 | 100.0% | 83.3% | 0.903 |
-| Near-twin | 6 | 100.0% | 66.7% | 0.783 |
-| Messy | 4 | 100.0% | 50.0% | 0.675 |
+| Type | n | Vector | BM25 |
+|------|--:|-------:|-----:|
+| Easy | 8 | 1.000 | 1.000 |
+| Paraphrase | 12 | 0.903 | 0.496 |
+| Near-twin | 6 | 0.783 | 0.542 |
+| Messy | 4 | 0.675 | 0.125 |
 
-**Reading it.** Vector search put the right article in the top 5 for every question: a ceiling effect, so hit@5 alone can't separate methods on this exam. hit@1 and MRR can, and they fall steadily from easy to messy questions, as the exam intended. The exam was not edited after seeing these results; a harder v2, written blind, comes after Level 3 so every method can be compared on both.
+**Reading it.**
+
+- When questions use the article's own words, the two methods tie: both put all 8 easy questions first.
+- The further the wording drifts, the bigger vector search's lead. On messy, real-user questions BM25 missed the top 5 for 3 of 4.
+- Question by question, vector search ranked the right article higher 13 times, BM25 once, and they tied 16 times; no question beat both. Full head-to-head: [docs/head-to-head-v1.md](docs/head-to-head-v1.md).
+- Vector search is at the hit@5 ceiling on this exam, so hit@1 and MRR carry the comparison. The exam was not edited after seeing results; a harder v2, written blind, will re-test both methods.
 
 ## Roadmap
 
