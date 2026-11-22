@@ -1,0 +1,464 @@
+{
+  "seed": 2026,
+  "mix": {
+    "easy": 6,
+    "paraphrase": 18,
+    "near-twin": 18,
+    "messy": 18
+  },
+  "excluded_v1_articles": [
+    "KB0002",
+    "KB0003",
+    "KB0011",
+    "KB0012",
+    "KB0028",
+    "KB0030",
+    "KB0033",
+    "KB0047",
+    "KB0058",
+    "KB0060",
+    "KB0067",
+    "KB0075",
+    "KB0080",
+    "KB0085",
+    "KB0091",
+    "KB0094",
+    "KB0103",
+    "KB0112",
+    "KB0115",
+    "KB0122",
+    "KB0136",
+    "KB0140",
+    "KB0146",
+    "KB0155",
+    "KB0156",
+    "KB0167",
+    "KB0168",
+    "KB0173",
+    "KB0188",
+    "KB0189",
+    "KB0190"
+  ],
+  "targets": [
+    {
+      "id": "V01",
+      "answer_article_id": "KB0162",
+      "category": "Chat & video meetings",
+      "title": "Others cannot hear you in a meeting",
+      "type": "messy"
+    },
+    {
+      "id": "V02",
+      "answer_article_id": "KB0164",
+      "category": "Chat & video meetings",
+      "title": "Cannot join a meeting from the link",
+      "type": "messy"
+    },
+    {
+      "id": "V03",
+      "answer_article_id": "KB0171",
+      "category": "Chat & video meetings",
+      "title": "Meeting keeps disconnecting",
+      "type": "easy"
+    },
+    {
+      "id": "V04",
+      "answer_article_id": "KB0174",
+      "category": "Chat & video meetings",
+      "title": "Stuck in the waiting room",
+      "type": "paraphrase"
+    },
+    {
+      "id": "V05",
+      "answer_article_id": "KB0178",
+      "category": "Chat & video meetings",
+      "title": "Virtual background will not load",
+      "type": "paraphrase"
+    },
+    {
+      "id": "V06",
+      "answer_article_id": "KB0179",
+      "category": "Chat & video meetings",
+      "title": "Meeting invite is missing the join link",
+      "type": "easy"
+    },
+    {
+      "id": "V07",
+      "answer_article_id": "KB0069",
+      "category": "Email & calendar",
+      "title": "Cannot open meeting link in calendar",
+      "type": "messy"
+    },
+    {
+      "id": "V08",
+      "answer_article_id": "KB0070",
+      "category": "Email & calendar",
+      "title": "Calendar showing wrong time zone",
+      "type": "messy"
+    },
+    {
+      "id": "V09",
+      "answer_article_id": "KB0071",
+      "category": "Email & calendar",
+      "title": "Email keeps disconnecting on your laptop",
+      "type": "easy"
+    },
+    {
+      "id": "V10",
+      "answer_article_id": "KB0073",
+      "category": "Email & calendar",
+      "title": "Calendar invitations showing twice",
+      "type": "paraphrase"
+    },
+    {
+      "id": "V11",
+      "answer_article_id": "KB0074",
+      "category": "Email & calendar",
+      "title": "Emails landing in the junk folder",
+      "type": "easy"
+    },
+    {
+      "id": "V12",
+      "answer_article_id": "KB0076",
+      "category": "Email & calendar",
+      "title": "Email signature missing on replies",
+      "type": "near-twin"
+    },
+    {
+      "id": "V13",
+      "answer_article_id": "KB0101",
+      "category": "Laptops & hardware",
+      "title": "Laptop Will Not Turn On",
+      "type": "paraphrase"
+    },
+    {
+      "id": "V14",
+      "answer_article_id": "KB0102",
+      "category": "Laptops & hardware",
+      "title": "Battery Drains Too Quickly",
+      "type": "near-twin"
+    },
+    {
+      "id": "V15",
+      "answer_article_id": "KB0105",
+      "category": "Laptops & hardware",
+      "title": "Touchpad Not Responding",
+      "type": "paraphrase"
+    },
+    {
+      "id": "V16",
+      "answer_article_id": "KB0111",
+      "category": "Laptops & hardware",
+      "title": "Laptop Screen Flickering or Shimmering",
+      "type": "paraphrase"
+    },
+    {
+      "id": "V17",
+      "answer_article_id": "KB0118",
+      "category": "Laptops & hardware",
+      "title": "Bluetooth Mouse Will Not Pair",
+      "type": "messy"
+    },
+    {
+      "id": "V18",
+      "answer_article_id": "KB0119",
+      "category": "Laptops & hardware",
+      "title": "SD Card Reader Not Reading Cards",
+      "type": "near-twin"
+    },
+    {
+      "id": "V19",
+      "answer_article_id": "KB0021",
+      "category": "Multi-factor authentication",
+      "title": "Authenticator code keeps being rejected",
+      "type": "paraphrase"
+    },
+    {
+      "id": "V20",
+      "answer_article_id": "KB0022",
+      "category": "Multi-factor authentication",
+      "title": "Sign-in blocked after replacing your phone",
+      "type": "near-twin"
+    },
+    {
+      "id": "V21",
+      "answer_article_id": "KB0024",
+      "category": "Multi-factor authentication",
+      "title": "Security key not recognized by the browser",
+      "type": "near-twin"
+    },
+    {
+      "id": "V22",
+      "answer_article_id": "KB0029",
+      "category": "Multi-factor authentication",
+      "title": "New laptop setup fails during enrollment",
+      "type": "paraphrase"
+    },
+    {
+      "id": "V23",
+      "answer_article_id": "KB0032",
+      "category": "Multi-factor authentication",
+      "title": "Sign-in codes work on the old laptop but not the new one",
+      "type": "messy"
+    },
+    {
+      "id": "V24",
+      "answer_article_id": "KB0037",
+      "category": "Multi-factor authentication",
+      "title": "Verification request came from a stranger's sign-in attempt",
+      "type": "paraphrase"
+    },
+    {
+      "id": "V25",
+      "answer_article_id": "KB0006",
+      "category": "Passwords & sign-in",
+      "title": "Sign-in keeps asking for password",
+      "type": "paraphrase"
+    },
+    {
+      "id": "V26",
+      "answer_article_id": "KB0007",
+      "category": "Passwords & sign-in",
+      "title": "Correct password rejected by Caps Lock or keyboard",
+      "type": "messy"
+    },
+    {
+      "id": "V27",
+      "answer_article_id": "KB0008",
+      "category": "Passwords & sign-in",
+      "title": "Password manager will not fill in",
+      "type": "paraphrase"
+    },
+    {
+      "id": "V28",
+      "answer_article_id": "KB0009",
+      "category": "Passwords & sign-in",
+      "title": "Old password still saved on devices",
+      "type": "paraphrase"
+    },
+    {
+      "id": "V29",
+      "answer_article_id": "KB0015",
+      "category": "Passwords & sign-in",
+      "title": "Sign-in page keeps redirecting in a loop",
+      "type": "messy"
+    },
+    {
+      "id": "V30",
+      "answer_article_id": "KB0020",
+      "category": "Passwords & sign-in",
+      "title": "Password manager saves duplicate entries",
+      "type": "near-twin"
+    },
+    {
+      "id": "V31",
+      "answer_article_id": "KB0088",
+      "category": "Printers & scanning",
+      "title": "Printer not found on the Wi-Fi network",
+      "type": "near-twin"
+    },
+    {
+      "id": "V32",
+      "answer_article_id": "KB0090",
+      "category": "Printers & scanning",
+      "title": "Double-sided printing does not work",
+      "type": "near-twin"
+    },
+    {
+      "id": "V33",
+      "answer_article_id": "KB0095",
+      "category": "Printers & scanning",
+      "title": "Printouts are faint or have streaks",
+      "type": "near-twin"
+    },
+    {
+      "id": "V34",
+      "answer_article_id": "KB0096",
+      "category": "Printers & scanning",
+      "title": "Scan button on the printer does nothing",
+      "type": "paraphrase"
+    },
+    {
+      "id": "V35",
+      "answer_article_id": "KB0099",
+      "category": "Printers & scanning",
+      "title": "Phone cannot find the office printer",
+      "type": "messy"
+    },
+    {
+      "id": "V36",
+      "answer_article_id": "KB0100",
+      "category": "Printers & scanning",
+      "title": "Scanned copies show dark lines down the page",
+      "type": "messy"
+    },
+    {
+      "id": "V37",
+      "answer_article_id": "KB0182",
+      "category": "Security & phishing",
+      "title": "Fake login page that looks like the company portal",
+      "type": "paraphrase"
+    },
+    {
+      "id": "V38",
+      "answer_article_id": "KB0183",
+      "category": "Security & phishing",
+      "title": "Suspicious text message with a delivery or account link",
+      "type": "messy"
+    },
+    {
+      "id": "V39",
+      "answer_article_id": "KB0185",
+      "category": "Security & phishing",
+      "title": "Lost or stolen laptop or phone",
+      "type": "easy"
+    },
+    {
+      "id": "V40",
+      "answer_article_id": "KB0192",
+      "category": "Security & phishing",
+      "title": "Authenticator code rejected even though typed correctly",
+      "type": "paraphrase"
+    },
+    {
+      "id": "V41",
+      "answer_article_id": "KB0194",
+      "category": "Security & phishing",
+      "title": "Chat message from a colleague asking for gift cards",
+      "type": "paraphrase"
+    },
+    {
+      "id": "V42",
+      "answer_article_id": "KB0197",
+      "category": "Security & phishing",
+      "title": "Password reset email you did not request",
+      "type": "messy"
+    },
+    {
+      "id": "V43",
+      "answer_article_id": "KB0143",
+      "category": "Software install & access",
+      "title": "Locked out after password change",
+      "type": "easy"
+    },
+    {
+      "id": "V44",
+      "answer_article_id": "KB0151",
+      "category": "Software install & access",
+      "title": "VPN app keeps disconnecting",
+      "type": "messy"
+    },
+    {
+      "id": "V45",
+      "answer_article_id": "KB0152",
+      "category": "Software install & access",
+      "title": "Authenticator app codes are out of sync",
+      "type": "messy"
+    },
+    {
+      "id": "V46",
+      "answer_article_id": "KB0153",
+      "category": "Software install & access",
+      "title": "Shared folder opens but files are read-only",
+      "type": "near-twin"
+    },
+    {
+      "id": "V47",
+      "answer_article_id": "KB0154",
+      "category": "Software install & access",
+      "title": "Software portal install button is greyed out",
+      "type": "near-twin"
+    },
+    {
+      "id": "V48",
+      "answer_article_id": "KB0158",
+      "category": "Software install & access",
+      "title": "VPN app connects but internal sites will not load",
+      "type": "near-twin"
+    },
+    {
+      "id": "V49",
+      "answer_article_id": "KB0041",
+      "category": "VPN & remote access",
+      "title": "VPN Fails After a Password Change",
+      "type": "paraphrase"
+    },
+    {
+      "id": "V50",
+      "answer_article_id": "KB0046",
+      "category": "VPN & remote access",
+      "title": "VPN Is Very Slow Compared to Normal",
+      "type": "near-twin"
+    },
+    {
+      "id": "V51",
+      "answer_article_id": "KB0051",
+      "category": "VPN & remote access",
+      "title": "Shared Drive Will Not Open While on VPN",
+      "type": "near-twin"
+    },
+    {
+      "id": "V52",
+      "answer_article_id": "KB0053",
+      "category": "VPN & remote access",
+      "title": "VPN App Says Update Required Before Connecting",
+      "type": "messy"
+    },
+    {
+      "id": "V53",
+      "answer_article_id": "KB0054",
+      "category": "VPN & remote access",
+      "title": "Remote Desktop Connects but Screen Stays Black",
+      "type": "near-twin"
+    },
+    {
+      "id": "V54",
+      "answer_article_id": "KB0055",
+      "category": "VPN & remote access",
+      "title": "Authenticator Codes Rejected Because Phone Clock Is Off",
+      "type": "messy"
+    },
+    {
+      "id": "V55",
+      "answer_article_id": "KB0123",
+      "category": "Wi-Fi & network",
+      "title": "Wi-Fi keeps disconnecting",
+      "type": "messy"
+    },
+    {
+      "id": "V56",
+      "answer_article_id": "KB0128",
+      "category": "Wi-Fi & network",
+      "title": "Video calls drop in the meeting room",
+      "type": "near-twin"
+    },
+    {
+      "id": "V57",
+      "answer_article_id": "KB0130",
+      "category": "Wi-Fi & network",
+      "title": "Docking station gives no network connection",
+      "type": "near-twin"
+    },
+    {
+      "id": "V58",
+      "answer_article_id": "KB0131",
+      "category": "Wi-Fi & network",
+      "title": "Office Wi-Fi name missing from the phone list",
+      "type": "paraphrase"
+    },
+    {
+      "id": "V59",
+      "answer_article_id": "KB0135",
+      "category": "Wi-Fi & network",
+      "title": "Shared drive will not open over Wi-Fi",
+      "type": "messy"
+    },
+    {
+      "id": "V60",
+      "answer_article_id": "KB0137",
+      "category": "Wi-Fi & network",
+      "title": "Security warning about the Wi-Fi certificate",
+      "type": "near-twin"
+    }
+  ]
+}
