@@ -2,7 +2,7 @@
 
 Four retrieval methods compete to find the right IT help article. One scoreboard shows who wins, how fast, and at what cost.
 
-> Status: 🚧 Level 3 in progress. BM25 keyword search is scored (MRR 0.590 vs vector search's 0.874 on exam v1); next is a harder exam v2 to re-test both.
+> Status: ✅ Level 3 shipped. Vector search beats BM25 on both exams (v2 MRR 0.892 vs 0.723), most of all on real-user wording. Next: Level 4, hybrid + rerank.
 
 ## What it is
 
@@ -106,7 +106,7 @@ Results above used `nomic-embed-text` with digest `0a109f422b47`. Articles are e
 No Ollama or API key needed:
 
 ```powershell
-uv run python scripts/run_bm25_search.py      # BM25 on the exam: hit@5, hit@1, MRR, by question type
+uv run python scripts/run_bm25_search.py      # BM25 on the exam: hit@5, hit@1, MRR, by question type (add --exam v2 for exam v2)
 uv run python scripts/compare_methods.py runs/results/vector_nomic-embed-text_0a109f422b47_v1.json runs/results/bm25_v1.json
 ```
 
@@ -122,17 +122,19 @@ uv run --env-file .env python scripts/generate_articles.py
 
 ## Results
 
-_Exam v1 (30 questions). Filled in as each level ships. Latency and cost arrive with Level 6._
+_Two exams: v1 (30 questions) and v2 (60 fresh questions on randomly picked articles, frozen before any method ran). Strict marking: only the listed article counts. Filled in as each level ships. Latency and cost arrive with Level 6._
 
-| Method | hit@5 | hit@1 | MRR | Avg latency (ms) | Cost per 1k queries |
-|--------|------:|------:|----:|-----------------:|--------------------:|
-| Random (floor baseline, seed 42) | 0.0% | 0.0% | 0.000 | – | – |
-| Vector (nomic-embed-text, local) | 100.0% | 80.0% | 0.874 | – | $0 (runs locally) |
-| Keyword (BM25) | 73.3% | 50.0% | 0.590 | – | $0 (runs locally) |
-| Hybrid | – | – | – | – | – |
-| Hybrid + rerank | – | – | – | – | – |
+| Method | v1 hit@5 | v1 hit@1 | v1 MRR | v2 hit@5 | v2 hit@1 | v2 MRR | Cost per 1k queries |
+|--------|------:|------:|----:|------:|------:|----:|--------------------:|
+| Random (floor baseline, seed 42) | 0.0% | 0.0% | 0.000 | – | – | – | – |
+| Vector (nomic-embed-text, local) | 100.0% | 80.0% | 0.874 | 98.3% | 83.3% | 0.892 | $0 (runs locally) |
+| Keyword (BM25) | 73.3% | 50.0% | 0.590 | 85.0% | 63.3% | 0.723 | $0 (runs locally) |
+| Hybrid | – | – | – | – | – | – | – |
+| Hybrid + rerank | – | – | – | – | – | – | – |
 
-**By question type (MRR)**
+Exam v2 details, lenient marking and findings: [docs/exam-v2-results.md](docs/exam-v2-results.md). The v1 results by type follow.
+
+**By question type, exam v1 (MRR)**
 
 | Type | n | Vector | BM25 |
 |------|--:|-------:|-----:|
@@ -146,13 +148,14 @@ _Exam v1 (30 questions). Filled in as each level ships. Latency and cost arrive 
 - When questions use the article's own words, the two methods tie: both put all 8 easy questions first.
 - The further the wording drifts, the bigger vector search's lead. On messy, real-user questions BM25 missed the top 5 for 3 of 4.
 - Question by question, vector search ranked the right article higher 13 times, BM25 once, and they tied 16 times; no question beat both. Full head-to-head: [docs/head-to-head-v1.md](docs/head-to-head-v1.md).
-- Vector search is at the hit@5 ceiling on this exam, so hit@1 and MRR carry the comparison. The exam was not edited after seeing results; a harder v2, written blind, will re-test both methods.
+- Vector search is at the hit@5 ceiling on v1, so hit@1 and MRR carry the comparison. The exam was not edited after seeing results.
+- **Exam v2 confirmed it on fresh, randomly chosen ground:** vector search leads again (MRR 0.892 vs 0.723), with the widest gap again on real-user, messy wording (0.801 vs 0.456). Next test: a library about 30 times larger, from real data (#30).
 
 ## Roadmap
 
 - [x] **Level 1: Build the library.** 200 synthetic articles, a 30-question test set, the hit@5 scorer and a random baseline
 - [x] **Level 2: Meaning search.** Vector search with local embeddings (nomic-embed-text via Ollama), cosine similarity, hit@1 and MRR
-- [ ] **Level 3: Keyword search.** BM25
+- [x] **Level 3: Keyword search.** BM25 with our own tokenizer, a question-by-question head-to-head, and a harder exam v2 to re-test both methods
 - [ ] **Level 4: Boss fight.** Hybrid and hybrid + rerank
 - [ ] **Level 5: Answer and cite.** Generate an answer from the retrieved articles, cite the sources, and score whether each answer is supported by what was retrieved (faithfulness)
 - [ ] **Level 6: X-ray vision.** Observability with tracing, latency and cost

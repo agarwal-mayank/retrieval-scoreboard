@@ -12,7 +12,7 @@ import json
 import sys
 from collections import Counter, defaultdict
 
-from scoreboard.report import TYPES, load_jsonl
+from scoreboard.report import EXAMS, TYPES, load_jsonl
 
 
 def rank(ranked, answer_id):
@@ -34,7 +34,10 @@ path_a, path_b = sys.argv[1], sys.argv[2]
 run_a = json.loads(open(path_a, encoding="utf-8").read())
 run_b = json.loads(open(path_b, encoding="utf-8").read())
 name_a, name_b = run_a["summary"]["method"], run_b["summary"]["method"]
-questions = load_jsonl("data/questions.jsonl")
+exam = run_a["summary"]["exam"]
+if run_b["summary"]["exam"] != exam:
+    raise SystemExit("These two runs used different exams, so they can't be compared question by question.")
+questions = load_jsonl(EXAMS[exam])
 
 print(f"\nA = {name_a}\nB = {name_b}\n")
 print(f"  {'Q':<4} {'type':<11} {'A':>3} {'B':>3}  winner")

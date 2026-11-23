@@ -4,9 +4,18 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-from scoreboard.scoring import hit_at_k, is_hit, mrr
+from scoreboard.scoring import credit_acceptable, hit_at_k, is_hit, mrr
 
 TYPES = ["easy", "paraphrase", "near-twin", "messy"]
+EXAMS = {"v1": "data/questions.jsonl", "v2": "data/questions_v2.jsonl"}
+
+
+def exam_from_args(argv):
+    """`--exam v2` picks exam v2; the default is v1."""
+    exam = argv[argv.index("--exam") + 1] if "--exam" in argv else "v1"
+    if exam not in EXAMS:
+        raise SystemExit(f"Unknown exam '{exam}'. Choose from: {', '.join(EXAMS)}")
+    return exam, load_jsonl(EXAMS[exam])
 
 
 def load_jsonl(path):
@@ -29,20 +38,28 @@ def summarize(results, questions, method, exam="v1"):
     by_type = defaultdict(dict)
     for q in questions:
         by_type[q["type"]][q["id"]] = q["answer_article_id"]
-    return {
+    summary = {
         "method": method,
         "exam": exam,
         "overall": metrics(results, answers),
         "by_type": {t: metrics(results, by_type[t]) for t in TYPES},
     }
+    if any(q.get("also_relevant") for q in questions):
+        # Lenient marking: an acceptable twin article also counts as right.
+        summary["overall_lenient"] = metrics(credit_acceptable(results, questions), answers)
+    return summary
 
 
 def print_report(summary, results, questions, titles):
     print(f"\n{summary['method']}, exam {summary['exam']}\n")
     print(f"  {'':<11} {'n':>3}  {'hit@5':>6}  {'hit@1':>6}  {'MRR':>5}")
     rows = [("overall", summary["overall"])] + list(summary["by_type"].items())
+    if "overall_lenient" in summary:
+        rows.append(("lenient*", summary["overall_lenient"]))
     for label, m in rows:
         print(f"  {label:<11} {m['questions']:>3}  {m['hit@5']:6.1%}  {m['hit@1']:6.1%}  {m['mrr']:5.3f}")
+    if "overall_lenient" in summary:
+        print("  * overall, counting an acceptable twin article (also_relevant) as right")
 
     both = [q for q in questions if q.get("also_relevant")]
     if both:
@@ -51,7 +68,7 @@ def print_report(summary, results, questions, titles):
             and all(a in results[q["id"]] for a in q["also_relevant"])
             for q in both
         )
-        print(f"\n  two-intent questions with both articles in the top 5: {found} of {len(both)}")
+        print(f"\n  questions with also_relevant articles, all of them in the top 5 too: {found} of {len(both)}")
 
     misses = [q for q in questions if not is_hit(results[q["id"]], q["answer_article_id"])]
     print(f"\nMisses from the top 5 ({len(misses)}):")
