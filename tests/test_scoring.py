@@ -2,7 +2,7 @@
 
 import pytest
 
-from scoreboard.scoring import hit_at_k, is_hit, mrr
+from scoreboard.scoring import credit_acceptable, hit_at_k, is_hit, mrr
 
 
 # --- is_hit: one question ---------------------------------------------------
@@ -110,3 +110,35 @@ def test_mrr_question_missing_from_results_scores_zero():
 def test_mrr_empty_answer_key_is_an_error():
     with pytest.raises(ValueError):
         mrr({}, {})
+
+
+# --- credit_acceptable: lenient marking ------------------------------------------
+
+QUESTIONS = [
+    {"id": "Q01", "answer_article_id": "KB0001", "also_relevant": ["KB0009"]},
+    {"id": "Q02", "answer_article_id": "KB0002"},
+]
+
+
+def test_acceptable_twin_counts_as_the_answer_at_its_position():
+    results = {"Q01": ["KB0005", "KB0009", "KB0007"], "Q02": ["KB0002"]}
+    credited = credit_acceptable(results, QUESTIONS)
+    assert credited["Q01"] == ["KB0005", "KB0001", "KB0007"]
+    assert mrr(credited, {"Q01": "KB0001"}) == pytest.approx(0.5)
+
+
+def test_answer_and_twin_both_present_keeps_the_better_rank():
+    results = {"Q01": ["KB0009", "KB0001"], "Q02": ["KB0002"]}
+    assert credit_acceptable(results, QUESTIONS)["Q01"] == ["KB0001"]
+
+
+def test_questions_without_twins_are_unchanged():
+    results = {"Q01": ["KB0005"], "Q02": ["KB0008", "KB0002"]}
+    assert credit_acceptable(results, QUESTIONS)["Q02"] == ["KB0008", "KB0002"]
+
+
+def test_strict_marking_ignores_twins():
+    results = {"Q01": ["KB0009"], "Q02": ["KB0002"]}
+    answers = {"Q01": "KB0001", "Q02": "KB0002"}
+    assert hit_at_k(results, answers) == 0.5
+    assert hit_at_k(credit_acceptable(results, QUESTIONS), answers) == 1.0

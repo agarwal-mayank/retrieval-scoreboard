@@ -47,3 +47,19 @@ def mrr(results: dict[str, list[str]], answers: dict[str, str]) -> float:
             rank = ranked.index(answer_id) + 1
             total += 1 / rank
     return total / len(answers)
+
+
+def credit_acceptable(results: dict[str, list[str]], questions: list[dict]) -> dict[str, list[str]]:
+    """Lenient marking: treat any also_relevant article as the right answer.
+
+    Returns a copy of results where each also_relevant id is replaced by the
+    question's answer id (keeping its position), so hit_at_k and mrr can be
+    reused unchanged. Questions without also_relevant are left as they are.
+    """
+    credited = {}
+    for q in questions:
+        ranked = results.get(q["id"], [])
+        acceptable = set(q.get("also_relevant", []))
+        swapped = [q["answer_article_id"] if r in acceptable else r for r in ranked]
+        credited[q["id"]] = list(dict.fromkeys(swapped))  # drop repeats, keep first position
+    return credited

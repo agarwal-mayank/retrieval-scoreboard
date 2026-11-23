@@ -1,0 +1,60 @@
+{"id": "V01", "question": "In teams meeting others saying they cant hear me at all. I can hear them fine. What to do ?", "answer_article_id": "KB0162", "type": "messy"}
+{"id": "V02", "question": "When I click on the meeting link nothing happens ? The page stays still. What to do ?", "answer_article_id": "KB0164", "type": "messy"}
+{"id": "V03", "question": "Meeting keeps disconnecting every few minutes", "answer_article_id": "KB0171", "type": "easy"}
+{"id": "V04", "question": "The host is already on the call but I'm left sitting there waiting to be let in", "answer_article_id": "KB0174", "type": "paraphrase"}
+{"id": "V05", "question": "I picked a beach picture to show behind me but everyone still sees my messy kitchen", "answer_article_id": "KB0178", "type": "paraphrase"}
+{"id": "V06", "question": "Meeting invite has no join link", "answer_article_id": "KB0179", "type": "easy"}
+{"id": "V07", "question": "Unable to open the online meeting link from the calendar invite. Nothing happens when I click the link.", "answer_article_id": "KB0069", "type": "messy"}
+{"id": "V08", "question": "The calendar time if off from the real meeting time. There is a mismatch.", "answer_article_id": "KB0070", "type": "messy"}
+{"id": "V09", "question": "My email keeps disconnecting on my laptop", "answer_article_id": "KB0071", "type": "easy"}
+{"id": "V10", "question": "The same meeting shows up two or three times in my schedule", "answer_article_id": "KB0073", "type": "paraphrase"}
+{"id": "V11", "question": "Emails from known customers landing in the junk folder", "answer_article_id": "KB0074", "type": "easy"}
+{"id": "V12", "question": "My name and job title show on new emails but disappear when I reply", "answer_article_id": "KB0076", "type": "near-twin"}
+{"id": "V13", "question": "I press the power button and nothing at all happens, no lights, completely dead", "answer_article_id": "KB0101", "type": "paraphrase"}
+{"id": "V14", "question": "Battery goes from full to empty by lunchtime even though I only have email open", "answer_article_id": "KB0102", "type": "near-twin"}
+{"id": "V15", "question": "The pointer won't move when I slide my finger on the pad below the keyboard", "answer_article_id": "KB0105", "type": "paraphrase"}
+{"id": "V16", "question": "My display keeps flashing and wobbling whenever I tilt the lid", "answer_article_id": "KB0111", "type": "paraphrase"}
+{"id": "V17", "question": "Unable to pair the mouse. The pairing is not working. Device not showing up in the listed devices.", "answer_article_id": "KB0118", "type": "messy"}
+{"id": "V18", "question": "I put my camera's memory card in the laptop slot and nothing shows up, it even asks me to format it", "answer_article_id": "KB0119", "type": "near-twin"}
+{"id": "V19", "question": "The numbers from my phone app always say invalid or expired when I log in", "answer_article_id": "KB0021", "type": "paraphrase", "also_relevant": ["KB0031", "KB0055", "KB0144", "KB0152", "KB0192"]}
+{"id": "V20", "question": "I upgraded to a new phone and now I can't approve logins any more", "answer_article_id": "KB0022", "type": "near-twin", "also_relevant": ["KB0199", "KB0035"]}
+{"id": "V21", "question": "I tap my USB security key and the browser says no key found", "answer_article_id": "KB0024", "type": "near-twin"}
+{"id": "V22", "question": "Trying to register my new computer for the extra login check, but it keeps refusing to add it", "answer_article_id": "KB0029", "type": "paraphrase"}
+{"id": "V23", "question": "I switched laptops and the verification codes have stopped working on this one. Help.", "answer_article_id": "KB0032", "type": "messy"}
+{"id": "V24", "question": "My phone just asked me to approve a login from a city I've never been to", "answer_article_id": "KB0037", "type": "paraphrase", "also_relevant": ["KB0027", "KB0184"]}
+{"id": "V25", "question": "Every few minutes the website makes me type my password again", "answer_article_id": "KB0006", "type": "paraphrase"}
+{"id": "V26", "question": "I am entering correct password but its not being taken.", "answer_article_id": "KB0007", "type": "messy"}
+{"id": "V27", "question": "My saved-logins tool doesn't offer to put in my work password anymore", "answer_article_id": "KB0008", "type": "paraphrase"}
+{"id": "V28", "question": "Laptop logs in fine but the mail on my tablet keeps nagging me to sign in", "answer_article_id": "KB0009", "type": "paraphrase", "also_relevant": ["KB0013", "KB0148"]}
+{"id": "V29", "question": "When entering login credentials nothing happens , the page reloads to the login page.", "answer_article_id": "KB0015", "type": "messy"}
+{"id": "V30", "question": "There are three different saved entries for the same work site and I don't know which one is right", "answer_article_id": "KB0020", "type": "near-twin"}
+{"id": "V31", "question": "When I try to add the wireless printer on my laptop it isn't in the list, but colleagues can see it", "answer_article_id": "KB0088", "type": "near-twin", "also_relevant": ["KB0134"]}
+{"id": "V32", "question": "I selected print on both sides but it only prints on one side", "answer_article_id": "KB0090", "type": "near-twin"}
+{"id": "V33", "question": "My printouts come out pale with thin lines across the same spot on every page", "answer_article_id": "KB0095", "type": "near-twin"}
+{"id": "V34", "question": "I hit the scan key on the copier and it just sits on the main menu, nothing gets scanned", "answer_article_id": "KB0096", "type": "paraphrase"}
+{"id": "V35", "question": "Unable to look at the office printer through phone.", "answer_article_id": "KB0099", "type": "messy"}
+{"id": "V36", "question": "Scanned copies are not clear. Need assistance.", "answer_article_id": "KB0100", "type": "messy"}
+{"id": "V37", "question": "The staff portal page looked a bit off, the address was slightly wrong and the logo was blurry", "answer_article_id": "KB0182", "type": "paraphrase"}
+{"id": "V38", "question": "I received a text saying my account has been locked. But I am able to log into the account. Why is the text sent to me ?", "answer_article_id": "KB0183", "type": "messy"}
+{"id": "V39", "question": "I lost my work laptop on the train", "answer_article_id": "KB0185", "type": "easy"}
+{"id": "V40", "question": "I type the six numbers from the app perfectly and it still says wrong, over and over", "answer_article_id": "KB0192", "type": "paraphrase", "also_relevant": ["KB0021", "KB0031", "KB0055", "KB0144", "KB0152"]}
+{"id": "V41", "question": "My boss pinged me asking me to quickly buy some store vouchers and send over the codes", "answer_article_id": "KB0194", "type": "paraphrase"}
+{"id": "V42", "question": "I am receiving multiple password reset emails in my inbox.", "answer_article_id": "KB0197", "type": "messy"}
+{"id": "V43", "question": "Locked out after changing my password", "answer_article_id": "KB0143", "type": "easy", "also_relevant": ["KB0013", "KB0009"]}
+{"id": "V44", "question": "VPN connection is very intermittent. Its not stable.", "answer_article_id": "KB0151", "type": "messy", "also_relevant": ["KB0044"]}
+{"id": "V45", "question": "The autenticator codes are not working. I tried so many times.", "answer_article_id": "KB0152", "type": "messy", "also_relevant": ["KB0021", "KB0031", "KB0055", "KB0144", "KB0192"]}
+{"id": "V46", "question": "I can open the team folder and see the files but it won't let me save changes, says read-only", "answer_article_id": "KB0153", "type": "near-twin"}
+{"id": "V47", "question": "The app is listed in the software portal but the install button is grey and won't click", "answer_article_id": "KB0154", "type": "near-twin"}
+{"id": "V48", "question": "VPN says connected and normal websites work, but the intranet and internal sites won't open", "answer_article_id": "KB0158", "type": "near-twin", "also_relevant": ["KB0042"]}
+{"id": "V49", "question": "Since I changed my login the remote access app keeps saying my details are wrong", "answer_article_id": "KB0041", "type": "paraphrase"}
+{"id": "V50", "question": "When I'm on the VPN at home everything crawls, pages take ages to load", "answer_article_id": "KB0046", "type": "near-twin"}
+{"id": "V51", "question": "Connected to the VPN, email works, but my shared drive folders just say the path is not available", "answer_article_id": "KB0051", "type": "near-twin"}
+{"id": "V52", "question": "Everytime I try to connect to vpn, the app wants to update. What to do ?", "answer_article_id": "KB0053", "type": "messy"}
+{"id": "V53", "question": "Remote desktop connects to my office PC but all I get is a black screen", "answer_article_id": "KB0054", "type": "near-twin"}
+{"id": "V54", "question": "Putting in code showing that wrong time error.", "answer_article_id": "KB0055", "type": "messy", "also_relevant": ["KB0031", "KB0021"]}
+{"id": "V55", "question": "Laptop not connecting to office wifi correctly, connection is intermittently dropping.", "answer_article_id": "KB0123", "type": "messy"}
+{"id": "V56", "question": "Video calls are fine at my desk but break up as soon as I go into a conference room", "answer_article_id": "KB0128", "type": "near-twin"}
+{"id": "V57", "question": "My laptop is plugged into the dock and the screens work but there's no network", "answer_article_id": "KB0130", "type": "near-twin"}
+{"id": "V58", "question": "In the office my mobile sees the neighbours' networks but not ours", "answer_article_id": "KB0131", "type": "paraphrase"}
+{"id": "V59", "question": "Shared drive is taking forever to open and throwing an error message.", "answer_article_id": "KB0135", "type": "messy", "also_relevant": ["KB0051"]}
+{"id": "V60", "question": "Joining the office Wi-Fi pops up a warning that the security certificate isn't trusted", "answer_article_id": "KB0137", "type": "near-twin"}
