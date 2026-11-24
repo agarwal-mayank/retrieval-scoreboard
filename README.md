@@ -2,7 +2,7 @@
 
 Four retrieval methods compete to find the right IT help article. One scoreboard shows who wins, how fast, and at what cost.
 
-> Status: ✅ Level 3 shipped. Vector search beats BM25 on both exams (v2 MRR 0.892 vs 0.723), most of all on real-user wording. Next: Level 4, hybrid + rerank.
+> Status: ✅ Level 4 shipped. Reranking vector search's top 10 with a local LLM is the winner so far (v2 hit@1 90.0%, MRR 0.938); hybrid search did not beat vector search alone. Next: a real-world round on a 30× larger public dataset.
 
 ## What it is
 
@@ -12,12 +12,14 @@ A small, reproducible benchmark for retrieval-augmented generation (RAG) search.
 |---|--------|-------------|
 | 1 | Vector search | Finds articles by meaning, using embeddings |
 | 2 | Keyword search (BM25) | Finds articles by matching words |
-| 3 | Hybrid | Blends vector and keyword results |
-| 4 | Hybrid + rerank | Hybrid, then a reranker reorders the top results |
+| 3 | Hybrid | Blends vector and keyword results (Reciprocal Rank Fusion) |
+| 4 | Vector + rerank | Vector search's top 10, re-ordered by a local LLM that reads each article |
 
-The arena: 200 synthetic IT help articles and 30 test questions. Each question has one known right answer.
+The arena: 200 synthetic IT help articles and two exams, v1 (30 questions) and v2 (60 fresh questions on randomly picked articles). Each question has one known right answer.
 
-The score: **hit@5**, meaning the share of questions where the right article appears in the top 5 results. Level 5 adds a second score, **faithfulness**: whether each generated answer is actually supported by the articles it cites.
+The scores: **hit@5** (right article in the top 5), **hit@1** (right article first) and **MRR** (rewards ranking it higher). Level 5 adds **faithfulness**: whether each generated answer is actually supported by the articles it cites.
+
+**Headline so far:** reranking helped, hybrid hurt. Full results below.
 
 ## Why
 
@@ -59,6 +61,8 @@ Three questions per category. The messy questions were written by hand from serv
 {"id": "Q14", "question": "The battery says 60 percent and a minute later it says 15",
  "answer_article_id": "KB0112", "type": "near-twin"}
 ```
+
+**Exam v2** (`data/questions_v2.jsonl`) adds 60 fresh questions: a fixed random seed picked 6 articles per category (none used in v1) and the type mix (6 easy, 18 paraphrase, 18 near-twin, 18 messy), so neither the writers nor any search result chose what it tests. The 18 messy questions were written by Mayank. It was committed before any method ran on it. Where an article has a genuine duplicate in another category, the duplicate is listed in `also_relevant`, and results are also reported with "lenient" marking that accepts it.
 
 `data/unanswerable.jsonl` holds questions with **no** matching article. They aren't scored by hit@5. At Level 5, the right behaviour is to say "I don't know" rather than invent an answer.
 
@@ -112,6 +116,18 @@ uv run python scripts/compare_methods.py runs/results/vector_nomic-embed-text_0a
 
 BM25 uses the standard [rank-bm25](https://pypi.org/project/rank-bm25/) implementation (`BM25Okapi`, default settings) over title + body, with our own tokenizer: lowercase, punctuation splits words, common stop words dropped.
 
+### Hybrid and rerank (Level 4)
+
+Ollama running with both models pulled (`ollama pull nomic-embed-text`, `ollama pull qwen2.5:7b`):
+
+```powershell
+uv run python scripts/run_hybrid_search.py                    # hybrid, equal weights (add --exam v2)
+uv run python scripts/run_hybrid_search.py --weights 0.7,0.3  # hybrid, vector 70% / BM25 30%
+uv run python scripts/run_rerank.py                           # vector top 10 + qwen2.5 rerank (add --exam v2)
+```
+
+Hybrid merges each method's top 20 with Reciprocal Rank Fusion (k = 60). The reranker is qwen2.5:7b (Q4_K_M, digest `845dbda0ea48`, temperature 0), given the question and the 10 candidates and asked to list them in order; if its reply can't be read, vector search's order is kept (it happened 0 times in 90).
+
 ### Regenerating the data
 
 The article library is already committed. To regenerate it (needs `ANTHROPIC_API_KEY` in `.env`; costs a few cents):
@@ -122,17 +138,22 @@ uv run --env-file .env python scripts/generate_articles.py
 
 ## Results
 
-_Two exams: v1 (30 questions) and v2 (60 fresh questions on randomly picked articles, frozen before any method ran). Strict marking: only the listed article counts. Filled in as each level ships. Latency and cost arrive with Level 6._
+_Two exams: v1 (30 questions) and v2 (60 fresh questions on randomly picked articles, frozen before any method ran). Strict marking: only the listed article counts. Every method was run once per exam with settings fixed in advance. Full latency and cost tracking arrives with Level 6._
 
-| Method | v1 hit@5 | v1 hit@1 | v1 MRR | v2 hit@5 | v2 hit@1 | v2 MRR | Cost per 1k queries |
-|--------|------:|------:|----:|------:|------:|----:|--------------------:|
+| Method | v1 hit@5 | v1 hit@1 | v1 MRR | v2 hit@5 | v2 hit@1 | v2 MRR | Cost |
+|--------|------:|------:|----:|------:|------:|----:|-----:|
+| **Vector + rerank (qwen2.5:7b, local)** | 96.7% | **86.7%** | **0.917** | 98.3% | **90.0%** | **0.938** | $0, ~4s per question |
+| Vector (nomic-embed-text, local) | 100.0% | 80.0% | 0.874 | 98.3% | 83.3% | 0.892 | $0 |
+| Hybrid, weighted 70% vector / 30% BM25 | 93.3% | 70.0% | 0.786 | 91.7% | 78.3% | 0.847 | $0 |
+| Hybrid, equal weights | 93.3% | 70.0% | 0.776 | 91.7% | 76.7% | 0.835 | $0 |
+| Keyword (BM25) | 73.3% | 50.0% | 0.590 | 85.0% | 63.3% | 0.723 | $0 |
 | Random (floor baseline, seed 42) | 0.0% | 0.0% | 0.000 | – | – | – | – |
-| Vector (nomic-embed-text, local) | 100.0% | 80.0% | 0.874 | 98.3% | 83.3% | 0.892 | $0 (runs locally) |
-| Keyword (BM25) | 73.3% | 50.0% | 0.590 | 85.0% | 63.3% | 0.723 | $0 (runs locally) |
-| Hybrid | – | – | – | – | – | – | – |
-| Hybrid + rerank | – | – | – | – | – | – | – |
 
-Exam v2 details, lenient marking and findings: [docs/exam-v2-results.md](docs/exam-v2-results.md). The v1 results by type follow.
+**Level 4 in one line: reranking helped, hybrid hurt.**
+
+- **Reranking** (a local LLM reads vector search's top 10 and re-orders them) is the only method to beat vector search alone: v2 hit@1 83.3% → 90.0%, with the biggest gains on paraphrase and messy questions. The cost: about 4 seconds per question, and one v1 near-twin question pushed out of the top 5. [docs/rerank-results.md](docs/rerank-results.md)
+- **Hybrid** (vector + BM25 merged with RRF) scored *below* vector search alone, even with vector weighted at 70% (a weighting chosen before running). When BM25 fails on real-user wording, its wrong guesses still get votes. "Hybrid always wins" didn't hold on this data. [docs/hybrid-results.md](docs/hybrid-results.md)
+- Exam v2 details and lenient marking: [docs/exam-v2-results.md](docs/exam-v2-results.md). The v1 results by type follow.
 
 **By question type, exam v1 (MRR)**
 
@@ -156,7 +177,7 @@ Exam v2 details, lenient marking and findings: [docs/exam-v2-results.md](docs/ex
 - [x] **Level 1: Build the library.** 200 synthetic articles, a 30-question test set, the hit@5 scorer and a random baseline
 - [x] **Level 2: Meaning search.** Vector search with local embeddings (nomic-embed-text via Ollama), cosine similarity, hit@1 and MRR
 - [x] **Level 3: Keyword search.** BM25 with our own tokenizer, a question-by-question head-to-head, and a harder exam v2 to re-test both methods
-- [ ] **Level 4: Boss fight.** Hybrid and hybrid + rerank
+- [x] **Level 4: Boss fight.** Hybrid search (equal and weighted RRF) and reranking with a local LLM
 - [ ] **Level 5: Answer and cite.** Generate an answer from the retrieved articles, cite the sources, and score whether each answer is supported by what was retrieved (faithfulness)
 - [ ] **Level 6: X-ray vision.** Observability with tracing, latency and cost
 - [ ] **Level 7: Ship it.** Polish, write-up and final results
