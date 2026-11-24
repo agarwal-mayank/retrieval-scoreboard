@@ -1,5 +1,7 @@
 """Unit tests for Reciprocal Rank Fusion. Written before the code."""
 
+import pytest
+
 from scoreboard.fusion import rrf
 
 
@@ -35,3 +37,27 @@ def test_k_controls_how_much_rank_matters():
 
 def test_no_rankings_gives_an_empty_list():
     assert rrf([]) == []
+
+
+# --- weighted fusion --------------------------------------------------------------
+
+
+def test_equal_weights_match_no_weights():
+    rankings = [["A", "B"], ["B", "C"]]
+    assert rrf(rankings, weights=[1, 1]) == rrf(rankings)
+
+
+def test_a_heavier_ranking_wins_a_disagreement():
+    # Both lists put a different article first; the 70% list should win.
+    assert rrf([["A"], ["B"]], weights=[0.7, 0.3]) == ["A", "B"]
+    assert rrf([["A"], ["B"]], weights=[0.3, 0.7]) == ["B", "A"]
+
+
+def test_agreement_can_still_beat_a_heavier_first_place():
+    # C is 2nd in both lists: 0.7/62 + 0.3/62 beats A's 0.7/61 alone
+    assert rrf([["A", "C"], ["B", "C"]], weights=[0.7, 0.3])[0] == "C"
+
+
+def test_one_weight_per_ranking_is_required():
+    with pytest.raises(ValueError):
+        rrf([["A"], ["B"]], weights=[1.0])
