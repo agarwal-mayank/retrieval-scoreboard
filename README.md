@@ -185,7 +185,7 @@ _Two exams: v1 (30 questions) and v2 (60 fresh questions on randomly picked arti
 
 - **The ranking flipped:** on real data, combining vector search with BM25 helped, most of all on chat-style questions.
 - **Real data is much harder:** MRR about half of the synthetic exams'.
-- The WixQA paper reports a different, LLM-judged metric (context recall), so its numbers aren't directly comparable; embeddings beat BM25 there too. Details, the split by question set and the paper comparison: [docs/wixqa-results.md](docs/wixqa-results.md). Reranking on WixQA is built but not run yet.
+- The WixQA paper reports a different, LLM-judged metric (context recall), so its numbers aren't directly comparable, but the pattern matches: embeddings beat BM25, and support tickets score higher than distilled chats. Details, the split by question set and the paper comparison: [docs/wixqa-results.md](docs/wixqa-results.md). Reranking on WixQA is built but not run yet.
 
 To reproduce: download `wix_kb_corpus/wix_kb_corpus.jsonl`, `wixqa_expertwritten/test.jsonl` (save as `expertwritten.jsonl`) and `wixqa_simulated/test.jsonl` (as `simulated.jsonl`) from https://huggingface.co/datasets/Wix/WixQA into `runs/wixqa/`, then run `uv run --env-file .env python scripts/run_wixqa.py` (this also runs the rerankers; the Claude Haiku one uses the API and prints a cost estimate first, capped at US$1). Embedding the 6,221 articles takes about 11 minutes once; it's cached after that.
 

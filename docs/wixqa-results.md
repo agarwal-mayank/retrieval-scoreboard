@@ -39,13 +39,13 @@ The paper (Cohen et al., 2025, [arXiv:2505.08643](https://arxiv.org/abs/2505.086
 
 | | ExpertWritten | Simulated |
 |---|--:|--:|
-| BM25 | 0.55 | 0.95–0.96 |
-| E5 | 0.67 | 0.96–0.97 |
+| BM25 | 0.72–0.73 | 0.55 |
+| E5 | 0.81 | 0.67 |
 
 (The ranges cover the four answer-generation models in the tables.)
 
-- **Same pattern on embeddings vs BM25:** dense retrieval beats BM25 in both, most clearly on ExpertWritten.
-- **Different metric, different picture on the two sets:** under the paper's context recall, Simulated scores *higher* than ExpertWritten; under our exact-article MRR it scores lower. Simulated answers are short, so the retrieved text more easily "covers" them even when the exact listed article isn't found. The numbers measure different things and are not directly comparable.
+- **Same pattern as ours:** dense retrieval beats BM25 on both sets, and ExpertWritten scores higher than Simulated for both methods.
+- **Different metric:** context recall is judged by an LLM against the expert answer, while our scores check whether the exact listed article was retrieved, using different models. The numbers are not directly comparable.
 
 ## Not done yet
 
