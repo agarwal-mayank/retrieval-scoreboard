@@ -2,7 +2,7 @@
 
 Four retrieval methods compete to find the right IT help article. One scoreboard shows who wins, how fast, and at what cost.
 
-> Status: ✅ Level 4 shipped. Reranking vector search's top 10 with a local LLM is the winner so far (v2 hit@1 90.0%, MRR 0.938); hybrid search did not beat vector search alone. Next: a real-world round on a 30× larger public dataset.
+> Status: ✅ Level 4 shipped, plus a real-world round on WixQA (6,221 real articles). On the synthetic exams vector search beat hybrid; on real data hybrid won (MRR 0.481 vs 0.443). The best method depends on the data.
 
 ## What it is
 
@@ -19,13 +19,13 @@ The arena: 200 synthetic IT help articles and two exams, v1 (30 questions) and v
 
 The scores: **hit@5** (right article in the top 5), **hit@1** (right article first) and **MRR** (rewards ranking it higher). Level 5 adds **faithfulness**: whether each generated answer is actually supported by the articles it cites.
 
-**Headline so far:** reranking helped, hybrid hurt. Full results below.
+**Headline so far:** on the synthetic exams, reranking helped and hybrid hurt; on real public data (WixQA), hybrid beat vector search alone. Full results below.
 
 ## Why
 
 Most RAG demos skip the question that matters in production: *is the search actually finding the right thing?* This project measures it. It compares methods on the same data with the same test, then adds observability (tracing, latency and cost) so the trade-offs are visible, not guessed.
 
-All data is synthetic. No real company or customer data is used.
+The main library and exams are synthetic. The real-world round uses the public WixQA benchmark (Wix.com AI Research, MIT licence), which is downloaded locally and not stored in this repo. No other company or customer data is used.
 
 ## Dataset
 
@@ -171,6 +171,25 @@ _Two exams: v1 (30 questions) and v2 (60 fresh questions on randomly picked arti
 - Question by question, vector search ranked the right article higher 13 times, BM25 once, and they tied 16 times; no question beat both. Full head-to-head: [docs/head-to-head-v1.md](docs/head-to-head-v1.md).
 - Vector search is at the hit@5 ceiling on v1, so hit@1 and MRR carry the comparison. The exam was not edited after seeing results.
 - **Exam v2 confirmed it on fresh, randomly chosen ground:** vector search leads again (MRR 0.892 vs 0.723), with the widest gap again on real-user, messy wording (0.801 vs 0.456). Next test: a library about 30 times larger, from real data (#30).
+
+### Real-world round: WixQA
+
+400 human questions (200 real support tickets, 200 distilled support chats) over 6,221 real help-centre articles. Any of a question's 1–3 correct articles counts.
+
+| Method | hit@5 | hit@1 | MRR |
+|---|--:|--:|--:|
+| **Hybrid, 70% vector / 30% BM25** | **70.0%** | 34.5% | **0.481** |
+| Hybrid, equal weights | 68.0% | **35.2%** | 0.473 |
+| Vector (nomic-embed-text, local) | 66.8% | 31.5% | 0.443 |
+| BM25 | 52.0% | 23.5% | 0.340 |
+
+- **The ranking flipped:** on real data, combining vector search with BM25 helped, most of all on chat-style questions.
+- **Real data is much harder:** MRR about half of the synthetic exams'.
+- The WixQA paper reports a different, LLM-judged metric (context recall), so its numbers aren't directly comparable, but the pattern matches: embeddings beat BM25, and support tickets score higher than distilled chats. Details, the split by question set and the paper comparison: [docs/wixqa-results.md](docs/wixqa-results.md). Reranking on WixQA is built but not run yet.
+
+To reproduce: download `wix_kb_corpus/wix_kb_corpus.jsonl`, `wixqa_expertwritten/test.jsonl` (save as `expertwritten.jsonl`) and `wixqa_simulated/test.jsonl` (as `simulated.jsonl`) from https://huggingface.co/datasets/Wix/WixQA into `runs/wixqa/`, then run `uv run --env-file .env python scripts/run_wixqa.py` (this also runs the rerankers; the Claude Haiku one uses the API and prints a cost estimate first, capped at US$1). Embedding the 6,221 articles takes about 11 minutes once; it's cached after that.
+
+WixQA: Wix.com AI Research, MIT Licence. Cohen et al., 2025, [arXiv:2505.08643](https://arxiv.org/abs/2505.08643).
 
 ## Roadmap
 

@@ -38,15 +38,20 @@ def summarize(results, questions, method, exam="v1"):
     by_type = defaultdict(dict)
     for q in questions:
         by_type[q["type"]][q["id"]] = q["answer_article_id"]
+    # The v1/v2 types in their usual order, then any others (e.g. WixQA's expert, simulated).
+    types = [t for t in TYPES if t in by_type] + [t for t in by_type if t not in TYPES]
     summary = {
         "method": method,
         "exam": exam,
         "overall": metrics(results, answers),
-        "by_type": {t: metrics(results, by_type[t]) for t in TYPES},
+        "by_type": {t: metrics(results, by_type[t]) for t in types},
     }
     if any(q.get("also_relevant") for q in questions):
         # Lenient marking: an acceptable twin article also counts as right.
-        summary["overall_lenient"] = metrics(credit_acceptable(results, questions), answers)
+        lenient = credit_acceptable(results, questions)
+        summary["overall_lenient"] = metrics(lenient, answers)
+        if not set(types) <= set(TYPES):
+            summary["by_type_lenient"] = {t: metrics(lenient, by_type[t]) for t in types}
     return summary
 
 
@@ -56,6 +61,8 @@ def print_report(summary, results, questions, titles):
     rows = [("overall", summary["overall"])] + list(summary["by_type"].items())
     if "overall_lenient" in summary:
         rows.append(("lenient*", summary["overall_lenient"]))
+    for t, m in summary.get("by_type_lenient", {}).items():
+        rows.append((f"lenient {t}"[:11], m))
     for label, m in rows:
         print(f"  {label:<11} {m['questions']:>3}  {m['hit@5']:6.1%}  {m['hit@1']:6.1%}  {m['mrr']:5.3f}")
     if "overall_lenient" in summary:
