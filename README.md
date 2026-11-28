@@ -179,14 +179,15 @@ _Two exams: v1 (30 questions) and v2 (60 fresh questions on randomly picked arti
 
 | Method | hit@5 | hit@1 | MRR |
 |---|--:|--:|--:|
-| **Vector + rerank (Claude Haiku)** | **76.8%** | **57.0%** | **0.653** |
+| **Hybrid 70/30 + rerank (Claude Haiku)** | **80.2%** | 56.0% | **0.661** |
+| Vector + rerank (Claude Haiku) | 76.8% | **57.0%** | 0.653 |
 | Vector + rerank (qwen2.5:7b, local) | 72.2% | 45.2% | 0.559 |
 | Hybrid, 70% vector / 30% BM25 | 70.0% | 34.5% | 0.481 |
 | Hybrid, equal weights | 68.0% | 35.0% | 0.472 |
 | Vector (nomic-embed-text, local) | 66.8% | 31.2% | 0.441 |
 | BM25 | 52.0% | 23.5% | 0.340 |
 
-- **Reranking wins on real data too, by the biggest margin yet:** Haiku reranking lifts hit@1 from 31% to 57%, for US$0.25 across all 400 questions (1.5 seconds each). The free local qwen reranker is second.
+- **Reranking wins on real data too, by the biggest margin yet:** Haiku reranking lifts hit@1 from 31% to 57%, for US$0.25 across all 400 questions (1.5 seconds each). The free local qwen reranker is second. Reranking the hybrid 70/30 shortlist instead finds more right articles (hit@5 80.2%, nDCG@10 0.664) but barely changes which comes first, so the reranker is the bigger lever.
 - **Without reranking, the ranking flipped:** on real data, combining vector search with BM25 helped, most of all on chat-style questions.
 - **Real data is much harder:** MRR about half of the synthetic exams'.
 - The WixQA paper reports a different, LLM-judged metric (context recall), so its numbers aren't directly comparable, but the pattern matches: embeddings beat BM25, and support tickets score higher than distilled chats. Details, the split by question set and the paper comparison: [docs/wixqa-results.md](docs/wixqa-results.md).
@@ -201,7 +202,8 @@ The field's usual retrieval metrics (nDCG@10 is the headline of the BEIR and MTE
 
 | Method | v1 nDCG@10 | v2 nDCG@10 | WixQA nDCG@10 | WixQA Recall@5 |
 |---|--:|--:|--:|--:|
-| Vector + rerank (Claude Haiku) | **0.990** | **0.990** | **0.647** | **0.715** |
+| Hybrid 70/30 + rerank (Claude Haiku) | – | – | **0.664** | **0.747** |
+| Vector + rerank (Claude Haiku) | **0.990** | **0.990** | 0.647 | 0.715 |
 | Vector + rerank (qwen2.5:7b) | 0.934 | 0.967 | 0.583 | 0.669 |
 | Vector | 0.914 | 0.947 | 0.507 | 0.610 |
 | Hybrid, 70/30 | 0.850 | 0.912 | 0.545 | 0.647 |
