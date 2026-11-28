@@ -2,7 +2,7 @@
 
 Four retrieval methods compete to find the right IT help article. One scoreboard shows who wins, how fast, and at what cost.
 
-> Status: ✅ Level 4 shipped, plus a real-world round on WixQA (6,221 real articles). On the synthetic exams vector search beat hybrid; on real data hybrid won (MRR 0.481 vs 0.443). The best method depends on the data.
+> Status: ✅ Level 4 shipped, plus a real-world round on WixQA (6,221 real articles). Reranking vector search's top 10 wins everywhere; Claude Haiku as the reranker lifts WixQA hit@1 from 31% to 57% for US$0.25. Without reranking, the best method depends on the data. Next: Level 5, answers with citations.
 
 ## What it is
 
@@ -13,13 +13,13 @@ A small, reproducible benchmark for retrieval-augmented generation (RAG) search.
 | 1 | Vector search | Finds articles by meaning, using embeddings |
 | 2 | Keyword search (BM25) | Finds articles by matching words |
 | 3 | Hybrid | Blends vector and keyword results (Reciprocal Rank Fusion) |
-| 4 | Vector + rerank | Vector search's top 10, re-ordered by a local LLM that reads each article |
+| 4 | Vector + rerank | Vector search's top 10, re-ordered by an LLM that reads each article (local qwen2.5, or Claude Haiku) |
 
 The arena: 200 synthetic IT help articles and two exams, v1 (30 questions) and v2 (60 fresh questions on randomly picked articles). Each question has one known right answer.
 
 The scores: **hit@5** (right article in the top 5), **hit@1** (right article first), **MRR** (rewards ranking it higher), and the field's standard **Recall@5** and **nDCG@10**. Level 5 adds **faithfulness**: whether each generated answer is actually supported by the articles it cites.
 
-**Headline so far:** on the synthetic exams, reranking helped and hybrid hurt; on real public data (WixQA), hybrid beat vector search alone. Full results below.
+**Headline so far:** reranking helped on every exam, synthetic and real. Hybrid hurt on the synthetic exams but beat vector search alone on real public data (WixQA). Full results below.
 
 ## Why
 
@@ -142,7 +142,8 @@ _Two exams: v1 (30 questions) and v2 (60 fresh questions on randomly picked arti
 
 | Method | v1 hit@5 | v1 hit@1 | v1 MRR | v2 hit@5 | v2 hit@1 | v2 MRR | Cost |
 |--------|------:|------:|----:|------:|------:|----:|-----:|
-| **Vector + rerank (qwen2.5:7b, local)** | 96.7% | **86.7%** | **0.917** | 98.3% | **90.0%** | **0.938** | $0, ~4s per question |
+| **Vector + rerank (Claude Haiku)** | **100.0%** | **93.3%** | **0.967** | **100.0%** | **91.7%** | **0.956** | US$0.04 for both exams, ~1.2s per question |
+| Vector + rerank (qwen2.5:7b, local) | 96.7% | 86.7% | 0.917 | 98.3% | 90.0% | 0.938 | $0, ~4s per question |
 | Vector (nomic-embed-text, local) | 100.0% | 80.0% | 0.874 | 98.3% | 83.3% | 0.892 | $0 |
 | Hybrid, weighted 70% vector / 30% BM25 | 93.3% | 70.0% | 0.786 | 91.7% | 78.3% | 0.847 | $0 |
 | Hybrid, equal weights | 93.3% | 70.0% | 0.776 | 91.7% | 76.7% | 0.835 | $0 |
@@ -178,14 +179,17 @@ _Two exams: v1 (30 questions) and v2 (60 fresh questions on randomly picked arti
 
 | Method | hit@5 | hit@1 | MRR |
 |---|--:|--:|--:|
-| **Hybrid, 70% vector / 30% BM25** | **70.0%** | 34.5% | **0.481** |
-| Hybrid, equal weights | 68.0% | **35.2%** | 0.473 |
-| Vector (nomic-embed-text, local) | 66.8% | 31.5% | 0.443 |
+| **Vector + rerank (Claude Haiku)** | **76.8%** | **57.0%** | **0.653** |
+| Vector + rerank (qwen2.5:7b, local) | 72.2% | 45.2% | 0.559 |
+| Hybrid, 70% vector / 30% BM25 | 70.0% | 34.5% | 0.481 |
+| Hybrid, equal weights | 68.0% | 35.0% | 0.472 |
+| Vector (nomic-embed-text, local) | 66.8% | 31.2% | 0.441 |
 | BM25 | 52.0% | 23.5% | 0.340 |
 
-- **The ranking flipped:** on real data, combining vector search with BM25 helped, most of all on chat-style questions.
+- **Reranking wins on real data too, by the biggest margin yet:** Haiku reranking lifts hit@1 from 31% to 57%, for US$0.25 across all 400 questions (1.5 seconds each). The free local qwen reranker is second.
+- **Without reranking, the ranking flipped:** on real data, combining vector search with BM25 helped, most of all on chat-style questions.
 - **Real data is much harder:** MRR about half of the synthetic exams'.
-- The WixQA paper reports a different, LLM-judged metric (context recall), so its numbers aren't directly comparable, but the pattern matches: embeddings beat BM25, and support tickets score higher than distilled chats. Details, the split by question set and the paper comparison: [docs/wixqa-results.md](docs/wixqa-results.md). Reranking on WixQA is built but not run yet.
+- The WixQA paper reports a different, LLM-judged metric (context recall), so its numbers aren't directly comparable, but the pattern matches: embeddings beat BM25, and support tickets score higher than distilled chats. Details, the split by question set and the paper comparison: [docs/wixqa-results.md](docs/wixqa-results.md).
 
 To reproduce: download `wix_kb_corpus/wix_kb_corpus.jsonl`, `wixqa_expertwritten/test.jsonl` (save as `expertwritten.jsonl`) and `wixqa_simulated/test.jsonl` (as `simulated.jsonl`) from https://huggingface.co/datasets/Wix/WixQA into `runs/wixqa/`, then run `uv run --env-file .env python scripts/run_wixqa.py` (this also runs the rerankers; the Claude Haiku one uses the API and prints a cost estimate first, capped at US$1). Embedding the 6,221 articles takes about 11 minutes once; it's cached after that.
 
@@ -197,13 +201,14 @@ The field's usual retrieval metrics (nDCG@10 is the headline of the BEIR and MTE
 
 | Method | v1 nDCG@10 | v2 nDCG@10 | WixQA nDCG@10 | WixQA Recall@5 |
 |---|--:|--:|--:|--:|
-| Vector + rerank (qwen2.5:7b) | **0.934** | **0.967** | not run | not run |
+| Vector + rerank (Claude Haiku) | **0.990** | **0.990** | **0.647** | **0.715** |
+| Vector + rerank (qwen2.5:7b) | 0.934 | 0.967 | 0.583 | 0.669 |
 | Vector | 0.914 | 0.947 | 0.507 | 0.610 |
-| Hybrid, 70/30 | 0.850 | 0.912 | **0.544** | **0.647** |
-| Hybrid, equal | 0.842 | 0.886 | 0.542 | 0.628 |
+| Hybrid, 70/30 | 0.850 | 0.912 | 0.545 | 0.647 |
+| Hybrid, equal | 0.842 | 0.886 | 0.541 | 0.628 |
 | BM25 | 0.677 | 0.770 | 0.395 | 0.474 |
 
-Same story as hit@5 and MRR: reranking leads on the synthetic exams, the 70/30 hybrid leads on real data. Full table and definitions: [docs/standard-metrics.md](docs/standard-metrics.md). To recompute from saved rankings: `uv run python scripts/rescore_results.py`.
+Same story as hit@5 and MRR: reranking leads everywhere (Haiku first, local qwen second); without reranking, vector search leads on the synthetic exams and the 70/30 hybrid on real data. Full table and definitions: [docs/standard-metrics.md](docs/standard-metrics.md). To recompute from saved rankings: `uv run python scripts/rescore_results.py`.
 
 ## Roadmap
 

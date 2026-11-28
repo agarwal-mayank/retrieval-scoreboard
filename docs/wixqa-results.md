@@ -11,24 +11,31 @@ Each question names 1–3 correct articles (98 of the 400 have more than one). A
 
 "Lenient" = any of the question's correct articles counts (the headline here, since many questions have several). "Strict" = only the first listed article counts.
 
-| Method | Lenient hit@5 | Lenient hit@1 | Lenient MRR | Strict hit@5 | Strict MRR |
-|---|--:|--:|--:|--:|--:|
-| **Hybrid, 70% vector / 30% BM25** | **70.0%** | 34.5% | **0.481** | **64.8%** | **0.437** |
-| Hybrid, equal weights | 68.0% | **35.2%** | 0.473 | 63.5% | 0.432 |
-| Vector (nomic-embed-text, local) | 66.8% | 31.5% | 0.443 | 61.0% | 0.403 |
-| BM25 | 52.0% | 23.5% | 0.340 | 48.0% | 0.308 |
+| Method | Lenient hit@5 | Lenient hit@1 | Lenient MRR | Strict hit@5 | Strict MRR | nDCG@10 |
+|---|--:|--:|--:|--:|--:|--:|
+| **Vector + rerank (Claude Haiku)** | **76.8%** | **57.0%** | **0.653** | **71.5%** | **0.596** | **0.647** |
+| Vector + rerank (qwen2.5:7b, local) | 72.2% | 45.2% | 0.559 | 67.0% | 0.510 | 0.583 |
+| Hybrid, 70% vector / 30% BM25 | 70.0% | 34.5% | 0.481 | 64.8% | 0.438 | 0.545 |
+| Hybrid, equal weights | 68.0% | 35.0% | 0.472 | 63.5% | 0.432 | 0.541 |
+| Vector (nomic-embed-text, local) | 66.8% | 31.2% | 0.441 | 61.0% | 0.403 | 0.507 |
+| BM25 | 52.0% | 23.5% | 0.340 | 48.0% | 0.308 | 0.395 |
 
-**By question set (lenient hit@5 / hit@1 / MRR)**
+Both rerankers re-order vector search's top 10, with each article trimmed to its first 400 words. Haiku: 1.5 seconds per question, US$0.249 for the 400 questions (2.08M input and 82k output tokens), 0 unreadable replies. qwen: 4.8 seconds per question, free, 0 unreadable replies.
+
+Re-running vector search moved its hit@1 by 0.3 points (31.5% → 31.2%) and MRR by 0.002; local embedding isn't perfectly repeatable run to run. The table shows the latest run.
+
+**By question set (lenient MRR / nDCG@10)**
 
 | Method | ExpertWritten (200) | Simulated (200) |
 |---|---|---|
-| Hybrid 70/30 | 75.0% / 37.0% / 0.515 | 65.0% / 32.0% / 0.447 |
-| Hybrid equal | 69.5% / 37.0% / 0.493 | 66.5% / 33.5% / 0.452 |
-| Vector | 74.0% / 34.5% / 0.481 | 59.5% / 28.5% / 0.404 |
-| BM25 | 56.0% / 27.0% / 0.378 | 48.0% / 20.0% / 0.301 |
+| Vector + rerank (Haiku) | 0.694 / 0.675 | 0.612 / 0.620 |
+| Vector + rerank (qwen) | 0.594 / 0.608 | 0.524 / 0.559 |
+| Hybrid 70/30 | 0.512 / 0.566 | 0.450 / 0.524 |
+| Vector | 0.479 / 0.534 | 0.404 / 0.479 |
 
 ## Findings
 
+- **Reranking is the biggest win on real data too.** Haiku reranking lifts hit@1 from 31.2% to 57.0% and MRR from 0.441 to 0.653, far ahead of any hybrid. The free local qwen reranker also beats every non-reranked method (MRR 0.559). A careful second judge matters more than how the shortlist is built.
 - **On real data, hybrid beats vector search alone**, the opposite of the synthetic exams. The 70/30 weighting, chosen before any run, scored best (MRR 0.481 vs 0.443). The best method depends on the data, so evaluate on data that looks like yours.
 - **Real data is much harder:** MRR is about half of the synthetic exams' (0.44–0.48 vs about 0.9). 6,221 articles means far more lookalikes competing for the top 5.
 - **Chat-style questions are harder than tickets for every method**, and that's where hybrid helps most (vector 59.5% → 66.5% hit@5). Likely reasons: Simulated questions are shorter (median 12 words vs 18, so fewer clues to match), and fewer of them have several correct articles (27 vs 52), which under lenient marking means fewer ways to score a hit.
@@ -49,7 +56,7 @@ The paper (Cohen et al., 2025, [arXiv:2505.08643](https://arxiv.org/abs/2505.086
 
 ## Not done yet
 
-- Reranking on WixQA (Claude Haiku and local qwen2.5) is built and tested (`scripts/run_wixqa.py`) but not run yet.
+- Reranking the hybrid's top 10 instead of vector search's (it might combine both gains; about US$0.25 more with Haiku).
 
 ## Attribution
 
