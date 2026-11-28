@@ -9,7 +9,8 @@ All scores come from the saved top-10 rankings (`scripts/rescore_results.py`); n
 
 | Method | v1 Recall@5 | v1 nDCG@10 | v2 Recall@5 | v2 nDCG@10 | WixQA Recall@5 | WixQA nDCG@10 |
 |---|--:|--:|--:|--:|--:|--:|
-| Vector + rerank (Claude Haiku) | **1.000** | **0.990** | **0.975** | **0.990** | **0.715** | **0.647** |
+| Hybrid 70/30 + rerank (Claude Haiku) | – | – | – | – | **0.747** | **0.664** |
+| Vector + rerank (Claude Haiku) | **1.000** | **0.990** | **0.975** | **0.990** | 0.715 | 0.647 |
 | Vector + rerank (qwen2.5:7b) | 0.950 | 0.934 | 0.961 | 0.967 | 0.669 | 0.583 |
 | Vector (nomic-embed-text) | **1.000** | 0.914 | 0.950 | 0.947 | 0.610 | 0.507 |
 | Hybrid, 70% vector / 30% BM25 | 0.917 | 0.850 | 0.903 | 0.912 | 0.647 | 0.545 |

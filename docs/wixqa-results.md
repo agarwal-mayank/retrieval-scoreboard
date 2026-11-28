@@ -13,7 +13,8 @@ Each question names 1–3 correct articles (98 of the 400 have more than one). A
 
 | Method | Lenient hit@5 | Lenient hit@1 | Lenient MRR | Strict hit@5 | Strict MRR | nDCG@10 |
 |---|--:|--:|--:|--:|--:|--:|
-| **Vector + rerank (Claude Haiku)** | **76.8%** | **57.0%** | **0.653** | **71.5%** | **0.596** | **0.647** |
+| **Hybrid 70/30 + rerank (Claude Haiku)** | **80.2%** | 56.0% | **0.661** | **74.0%** | **0.602** | **0.664** |
+| Vector + rerank (Claude Haiku) | 76.8% | **57.0%** | 0.653 | 71.5% | 0.596 | 0.647 |
 | Vector + rerank (qwen2.5:7b, local) | 72.2% | 45.2% | 0.559 | 67.0% | 0.510 | 0.583 |
 | Hybrid, 70% vector / 30% BM25 | 70.0% | 34.5% | 0.481 | 64.8% | 0.438 | 0.545 |
 | Hybrid, equal weights | 68.0% | 35.0% | 0.472 | 63.5% | 0.432 | 0.541 |
@@ -28,14 +29,32 @@ An earlier run a day before reported vector search at 31.5% hit@1 and MRR 0.443 
 
 | Method | ExpertWritten (200) | Simulated (200) |
 |---|---|---|
+| Hybrid 70/30 + rerank (Haiku) | 0.694 / 0.680 | 0.628 / 0.647 |
 | Vector + rerank (Haiku) | 0.694 / 0.675 | 0.612 / 0.620 |
 | Vector + rerank (qwen) | 0.594 / 0.608 | 0.524 / 0.559 |
 | Hybrid 70/30 | 0.512 / 0.566 | 0.450 / 0.524 |
 | Vector | 0.479 / 0.534 | 0.404 / 0.479 |
 
+## Does a better shortlist help the reranker?
+
+A top-10 reranker can only reorder what's in its shortlist, so hit@10 is its ceiling:
+
+| Shortlist | hit@10 | ExpertWritten | Simulated |
+|---|--:|--:|--:|
+| Hybrid 70/30 | 80.5% | 84.5% | 76.5% |
+| Vector | 77.0% | 81.5% | 72.5% |
+
+Reranking the hybrid shortlist with Haiku (one run, US$0.2625, 1.5 seconds per question, 0 unreadable replies) against reranking the vector shortlist:
+
+- **More right articles found:** hit@5 76.8% → 80.2%, Recall@5 0.715 → 0.747, nDCG@10 0.647 → 0.664. That's about the 3.5-point higher ceiling, carried through.
+- **No gain at #1:** hit@1 57.0% → 56.0% (4 questions), MRR 0.653 → 0.661. Within noise.
+- **The gain is on chat-style questions:** Simulated MRR 0.612 → 0.628 and nDCG@10 0.620 → 0.647; ExpertWritten MRR is unchanged at 0.694.
+
+So a better shortlist helps the reranker find more right articles, but on this data it barely changes which article comes first. The reranker itself is still the bigger lever (vector 0.441 → 0.653 MRR from reranking, against 0.653 → 0.661 from the better shortlist).
+
 ## Findings
 
-- **Reranking is the biggest win on real data too.** Haiku reranking lifts hit@1 from 31.2% to 57.0% and MRR from 0.441 to 0.653, far ahead of any hybrid. The free local qwen reranker also beats every non-reranked method (MRR 0.559). Since only vector search's shortlist was reranked, whether the reranker matters more than how the shortlist is built is a hypothesis; reranking the hybrid's shortlist would test it.
+- **Reranking is the biggest win on real data too.** Haiku reranking lifts hit@1 from 31.2% to 57.0% and MRR from 0.441 to 0.653, far ahead of any hybrid. The free local qwen reranker also beats every non-reranked method (MRR 0.559). Reranking the hybrid shortlist instead (see above) adds a little more, mostly in how many right articles reach the top 5.
 - **On real data, hybrid beats vector search alone**, the opposite of the synthetic exams. The 70/30 weighting, chosen before any run, scored best of the non-reranked methods (MRR 0.481 vs 0.441). The best method depends on the data, so evaluate on data that looks like yours.
 - **Real data is much harder:** MRR is about half of the synthetic exams' (0.44–0.48 vs about 0.9). 6,221 articles means far more lookalikes competing for the top 5.
 - **Chat-style questions are harder than tickets for every method**, and that's where hybrid helps most (vector 59.5% → 66.5% hit@5). Likely reasons: Simulated questions are shorter (median 12 words vs 18, so fewer clues to match), and fewer of them have several correct articles (27 vs 52), which under lenient marking means fewer ways to score a hit.
@@ -53,10 +72,6 @@ The paper (Cohen et al., 2025, [arXiv:2505.08643](https://arxiv.org/abs/2505.086
 
 - **Same pattern as ours:** dense retrieval beats BM25 on both sets, and ExpertWritten scores higher than Simulated for both methods.
 - **Different metric:** context recall is judged by an LLM against the expert answer, while our scores check whether the exact listed article was retrieved, using different models. The numbers are not directly comparable.
-
-## Not done yet
-
-- Reranking the hybrid's top 10 instead of vector search's (it might combine both gains; about US$0.25 more with Haiku).
 
 ## Attribution
 
