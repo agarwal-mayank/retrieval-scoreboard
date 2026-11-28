@@ -4,6 +4,7 @@ Download the three WixQA files into runs/wixqa/ first (see README), then, with
 Ollama running and the API key loaded:
 
     uv run --env-file .env python scripts/run_wixqa.py
+    uv run python scripts/run_wixqa.py --no-rerank   # vector, BM25 and hybrids only (no API)
 
 Methods: vector, BM25, hybrid (equal and 70/30, top 20 each), and vector top 10
 reranked by Claude Haiku and by local qwen. Articles can have several right
@@ -11,6 +12,7 @@ answers, so the lenient numbers are the headline; strict is shown too.
 The embedding cache (runs/embeddings/wixqa) makes re-runs fast.
 """
 
+import sys
 import time
 
 from scoreboard.embeddings import OllamaEmbedder, load_or_build_article_vectors
@@ -24,6 +26,7 @@ from scoreboard.wixqa import load_wixqa
 CANDIDATES = 20  # per method, for the hybrids
 SHORTLIST = 10  # vector results handed to a reranker
 EXAM = "wixqa"
+KEEP = 10  # results kept per question: hit@5 and MRR use the top 5, nDCG@10 the top 10
 
 articles, questions = load_wixqa()
 by_id = {a["id"]: a for a in articles}
@@ -46,13 +49,16 @@ bm25 = BM25Index(articles)
 vector_ranked = {q["id"]: top_k(v, article_vectors, k=CANDIDATES) for q, v in zip(questions, query_vectors)}
 bm25_ranked = {q["id"]: bm25.top_k(q["question"], k=CANDIDATES) for q in questions}
 
-report({i: r[:5] for i, r in vector_ranked.items()}, f"Vector search ({embedder.name})", "vector", embedder=embedder.name)
+report({i: r[:KEEP] for i, r in vector_ranked.items()}, f"Vector search ({embedder.name})", "vector", embedder=embedder.name)
 report(
-    {i: r[:5] for i, r in bm25_ranked.items()}, "Keyword search (BM25)", "bm25",
+    {i: r[:KEEP] for i, r in bm25_ranked.items()}, "Keyword search (BM25)", "bm25",
 )
 for weights, label, name in [(None, "equal weights", "hybrid"), ([0.7, 0.3], "weighted 70% vector / 30% BM25", "hybrid_w70-30")]:
-    fused = {i: rrf([vector_ranked[i], bm25_ranked[i]], weights=weights)[:5] for i in vector_ranked}
+    fused = {i: rrf([vector_ranked[i], bm25_ranked[i]], weights=weights)[:KEEP] for i in vector_ranked}
     report(fused, f"Hybrid ({label}, RRF k=60, top {CANDIDATES} each)", name, weights=weights)
+
+if "--no-rerank" in sys.argv:
+    raise SystemExit(0)
 
 
 def shortlist(q):
@@ -65,7 +71,7 @@ def run_reranker(judge, method, name, **extra):
         started = time.monotonic()
         reranked = judge.rerank(q["question"], shortlist(q))
         seconds.append(time.monotonic() - started)
-        results[q["id"]] = [a["id"] for a in reranked][:5]
+        results[q["id"]] = [a["id"] for a in reranked][:KEEP]
         if n % 25 == 0:
             print(f"  {name}: {n}/{len(questions)}", flush=True)
     extra["avg_seconds_per_question"] = round(sum(seconds) / len(seconds), 2)

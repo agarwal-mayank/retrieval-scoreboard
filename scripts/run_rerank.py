@@ -43,7 +43,7 @@ try:
         started = time.monotonic()
         reranked = reranker.rerank(q["question"], shortlist)
         seconds.append(time.monotonic() - started)
-        results[q["id"]] = [a["id"] for a in reranked][:5]
+        results[q["id"]] = [a["id"] for a in reranked][:10]
         print(f"  {n}/{len(questions)} {q['id']} reranked in {seconds[-1]:.1f}s", flush=True)
 finally:
     if name == "haiku":

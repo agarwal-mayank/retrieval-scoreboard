@@ -4,7 +4,7 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-from scoreboard.scoring import credit_acceptable, hit_at_k, is_hit, mrr
+from scoreboard.scoring import credit_acceptable, hit_at_k, is_hit, mean_ndcg_at_k, mean_recall_at_k, mrr
 
 TYPES = ["easy", "paraphrase", "near-twin", "messy"]
 EXAMS = {"v1": "data/questions.jsonl", "v2": "data/questions_v2.jsonl"}
@@ -29,7 +29,16 @@ def metrics(results, key):
         "questions": len(key),
         "hit@5": hit_at_k(results, key, k=5),
         "hit@1": hit_at_k(results, key, k=1),
-        "mrr": mrr(results, key),
+        "mrr": mrr({i: r[:5] for i, r in results.items()}, key),  # MRR over the top 5
+    }
+
+
+def standard_metrics(results, questions):
+    """Recall@5 and nDCG@10, the field's standard retrieval metrics, over these questions."""
+    return {
+        "questions": len(questions),
+        "recall@5": mean_recall_at_k(results, questions, k=5),
+        "ndcg@10": mean_ndcg_at_k(results, questions, k=10),
     }
 
 
@@ -45,6 +54,14 @@ def summarize(results, questions, method, exam="v1"):
         "exam": exam,
         "overall": metrics(results, answers),
         "by_type": {t: metrics(results, by_type[t]) for t in types},
+    }
+    # Standard metrics that count every correct article (answer + also_relevant).
+    by_type_questions = defaultdict(list)
+    for q in questions:
+        by_type_questions[q["type"]].append(q)
+    summary["standard"] = {
+        "overall": standard_metrics(results, questions),
+        "by_type": {t: standard_metrics(results, by_type_questions[t]) for t in types},
     }
     if any(q.get("also_relevant") for q in questions):
         # Lenient marking: an acceptable twin article also counts as right.
@@ -67,12 +84,14 @@ def print_report(summary, results, questions, titles):
         print(f"  {label:<11} {m['questions']:>3}  {m['hit@5']:6.1%}  {m['hit@1']:6.1%}  {m['mrr']:5.3f}")
     if "overall_lenient" in summary:
         print("  * overall, counting an acceptable twin article (also_relevant) as right")
+    std = summary["standard"]["overall"]
+    print(f"  standard (all correct articles): Recall@5 {std['recall@5']:.3f}, nDCG@10 {std['ndcg@10']:.3f}")
 
     both = [q for q in questions if q.get("also_relevant")]
     if both:
         found = sum(
             is_hit(results[q["id"]], q["answer_article_id"])
-            and all(a in results[q["id"]] for a in q["also_relevant"])
+            and all(a in results[q["id"]][:5] for a in q["also_relevant"])
             for q in both
         )
         print(f"\n  questions with also_relevant articles, all of them in the top 5 too: {found} of {len(both)}")

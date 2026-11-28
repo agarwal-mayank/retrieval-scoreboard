@@ -1,6 +1,9 @@
 """The referee: scores a search method's results against the answer key."""
 
 
+import math
+
+
 def is_hit(ranked_ids: list[str], answer_id: str, k: int = 5) -> bool:
     """True if answer_id is among the first k ids in ranked_ids.
 
@@ -63,3 +66,48 @@ def credit_acceptable(results: dict[str, list[str]], questions: list[dict]) -> d
         swapped = [q["answer_article_id"] if r in acceptable else r for r in ranked]
         credited[q["id"]] = list(dict.fromkeys(swapped))  # drop repeats, keep first position
     return credited
+
+
+def recall_at_k(ranked: list[str], relevant: set[str], k: int = 5) -> float:
+    """Share of the relevant articles that appear in the top k, from 0.0 to 1.0.
+
+    With one relevant article this is the same as is_hit (1.0 or 0.0).
+    Raise ValueError if relevant is empty.
+    """
+    if not relevant:
+        raise ValueError("No relevant articles to find")
+    return len(set(ranked[:k]) & relevant) / len(relevant)
+
+
+def ndcg_at_k(ranked: list[str], relevant: set[str], k: int = 10) -> float:
+    """Normalised discounted cumulative gain for one question, from 0.0 to 1.0.
+
+    Gain: each relevant article in the top k earns points.
+    Discounted: an article at position p (counting from 1) earns 1 / log2(p + 1),
+        so #1 earns 1.0, #2 earns 0.63, #3 earns 0.5, #10 earns 0.29.
+    Normalised: divide by the best possible score, which is every relevant
+        article at the very top (only the first k positions count).
+    Raise ValueError if relevant is empty.
+    """
+    if not relevant:
+        raise ValueError("No relevant articles to find")
+    dcg = 0.0
+    for position, article_id in enumerate(ranked[:k], start=1):
+        if article_id in relevant:
+            dcg += 1 / math.log2(position + 1)
+    ideal = sum(1 / math.log2(p + 1) for p in range(1, min(len(relevant), k) + 1))
+    return dcg / ideal
+
+def relevant_set(question: dict) -> set[str]:
+    """All correct articles for a question: the answer plus any also_relevant."""
+    return {question["answer_article_id"], *question.get("also_relevant", [])}
+
+
+def mean_recall_at_k(results: dict[str, list[str]], questions: list[dict], k: int = 5) -> float:
+    """recall_at_k averaged over questions (a question missing from results scores 0)."""
+    return sum(recall_at_k(results.get(q["id"], []), relevant_set(q), k) for q in questions) / len(questions)
+
+
+def mean_ndcg_at_k(results: dict[str, list[str]], questions: list[dict], k: int = 10) -> float:
+    """ndcg_at_k averaged over questions (a question missing from results scores 0)."""
+    return sum(ndcg_at_k(results.get(q["id"], []), relevant_set(q), k) for q in questions) / len(questions)

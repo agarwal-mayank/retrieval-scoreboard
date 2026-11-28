@@ -17,7 +17,7 @@ A small, reproducible benchmark for retrieval-augmented generation (RAG) search.
 
 The arena: 200 synthetic IT help articles and two exams, v1 (30 questions) and v2 (60 fresh questions on randomly picked articles). Each question has one known right answer.
 
-The scores: **hit@5** (right article in the top 5), **hit@1** (right article first) and **MRR** (rewards ranking it higher). Level 5 adds **faithfulness**: whether each generated answer is actually supported by the articles it cites.
+The scores: **hit@5** (right article in the top 5), **hit@1** (right article first), **MRR** (rewards ranking it higher), and the field's standard **Recall@5** and **nDCG@10**. Level 5 adds **faithfulness**: whether each generated answer is actually supported by the articles it cites.
 
 **Headline so far:** on the synthetic exams, reranking helped and hybrid hurt; on real public data (WixQA), hybrid beat vector search alone. Full results below.
 
@@ -190,6 +190,20 @@ _Two exams: v1 (30 questions) and v2 (60 fresh questions on randomly picked arti
 To reproduce: download `wix_kb_corpus/wix_kb_corpus.jsonl`, `wixqa_expertwritten/test.jsonl` (save as `expertwritten.jsonl`) and `wixqa_simulated/test.jsonl` (as `simulated.jsonl`) from https://huggingface.co/datasets/Wix/WixQA into `runs/wixqa/`, then run `uv run --env-file .env python scripts/run_wixqa.py` (this also runs the rerankers; the Claude Haiku one uses the API and prints a cost estimate first, capped at US$1). Embedding the 6,221 articles takes about 11 minutes once; it's cached after that.
 
 WixQA: Wix.com AI Research, MIT Licence. Cohen et al., 2025, [arXiv:2505.08643](https://arxiv.org/abs/2505.08643).
+
+### Standard metrics: Recall@5 and nDCG@10
+
+The field's usual retrieval metrics (nDCG@10 is the headline of the BEIR and MTEB benchmarks), counting every correct article for a question:
+
+| Method | v1 nDCG@10 | v2 nDCG@10 | WixQA nDCG@10 | WixQA Recall@5 |
+|---|--:|--:|--:|--:|
+| Vector + rerank (qwen2.5:7b) | **0.934** | **0.967** | not run | not run |
+| Vector | 0.914 | 0.947 | 0.507 | 0.610 |
+| Hybrid, 70/30 | 0.850 | 0.912 | **0.544** | **0.647** |
+| Hybrid, equal | 0.842 | 0.886 | 0.542 | 0.628 |
+| BM25 | 0.677 | 0.770 | 0.395 | 0.474 |
+
+Same story as hit@5 and MRR: reranking leads on the synthetic exams, the 70/30 hybrid leads on real data. Full table and definitions: [docs/standard-metrics.md](docs/standard-metrics.md). To recompute from saved rankings: `uv run python scripts/rescore_results.py`.
 
 ## Roadmap
 
