@@ -37,7 +37,7 @@ results = {}
 for q, v in zip(questions, query_vectors):
     vector_ranking = top_k(v, article_vectors, k=CANDIDATES)
     keyword_ranking = bm25.top_k(q["question"], k=CANDIDATES)
-    results[q["id"]] = rrf([vector_ranking, keyword_ranking], weights=weights)[:5]
+    results[q["id"]] = rrf([vector_ranking, keyword_ranking], weights=weights)[:10]
 
 if weights:
     label = f"weighted {weights[0]:.0%} vector / {weights[1]:.0%} BM25"

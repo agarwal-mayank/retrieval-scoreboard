@@ -2,7 +2,7 @@
 
 import pytest
 
-from scoreboard.scoring import credit_acceptable, hit_at_k, is_hit, mrr
+from scoreboard.scoring import credit_acceptable, hit_at_k, is_hit, mean_recall_at_k, mrr, ndcg_at_k, recall_at_k
 
 
 # --- is_hit: one question ---------------------------------------------------
@@ -142,3 +142,67 @@ def test_strict_marking_ignores_twins():
     answers = {"Q01": "KB0001", "Q02": "KB0002"}
     assert hit_at_k(results, answers) == 0.5
     assert hit_at_k(credit_acceptable(results, QUESTIONS), answers) == 1.0
+
+
+# --- recall@k ---------------------------------------------------------------------
+
+def test_recall_one_relevant_found_or_not():
+    assert recall_at_k(["KB0001", "KB0002"], {"KB0001"}) == 1.0
+    assert recall_at_k(["KB0003", "KB0002"], {"KB0001"}) == 0.0
+
+
+def test_recall_counts_the_share_of_relevant_articles_found():
+    ranked = ["KB0001", "KB0009", "KB0002", "KB0008", "KB0007"]
+    assert recall_at_k(ranked, {"KB0001", "KB0002", "KB0003"}) == pytest.approx(2 / 3)
+
+
+def test_recall_ignores_positions_past_k():
+    assert recall_at_k(["KB0009"] * 5 + ["KB0001"], {"KB0001"}, k=5) == 0.0
+
+
+# --- nDCG@k (boss fight #6) -------------------------------------------------------
+
+def test_ndcg_one_relevant_at_rank_1_is_perfect():
+    assert ndcg_at_k(["KB0001", "KB0002"], {"KB0001"}) == pytest.approx(1.0)
+
+
+def test_ndcg_one_relevant_at_rank_2():
+    # 1 / log2(3) = 0.6309
+    assert ndcg_at_k(["KB0009", "KB0001"], {"KB0001"}) == pytest.approx(0.6309, abs=1e-4)
+
+
+def test_ndcg_one_relevant_at_rank_3_is_a_half():
+    assert ndcg_at_k(["KB0009", "KB0008", "KB0001"], {"KB0001"}) == pytest.approx(0.5)
+
+
+def test_ndcg_missing_scores_zero():
+    assert ndcg_at_k(["KB0009", "KB0008"], {"KB0001"}) == 0.0
+
+
+def test_ndcg_ignores_positions_past_k():
+    assert ndcg_at_k(["KB0009"] * 10 + ["KB0001"], {"KB0001"}, k=10) == 0.0
+
+
+def test_ndcg_two_relevant_at_the_top_is_perfect():
+    assert ndcg_at_k(["KB0002", "KB0001", "KB0009"], {"KB0001", "KB0002"}) == pytest.approx(1.0)
+
+
+def test_ndcg_two_relevant_at_1_and_3():
+    # (1 + 1/log2(4)) / (1 + 1/log2(3)) = 1.5 / 1.6309 = 0.9197
+    assert ndcg_at_k(["KB0001", "KB0009", "KB0002"], {"KB0001", "KB0002"}) == pytest.approx(0.9197, abs=1e-4)
+
+
+def test_ndcg_empty_ranking_scores_zero():
+    assert ndcg_at_k([], {"KB0001"}) == 0.0
+
+
+def test_ndcg_empty_relevant_set_is_an_error():
+    with pytest.raises(ValueError):
+        ndcg_at_k(["KB0001"], set())
+
+
+# --- averages over an exam ----------------------------------------------------------
+
+def test_mean_recall_uses_answer_and_also_relevant():
+    questions = [{"id": "Q01", "answer_article_id": "KB0001", "also_relevant": ["KB0002"]}]
+    assert mean_recall_at_k({"Q01": ["KB0002", "KB0009"]}, questions) == pytest.approx(0.5)

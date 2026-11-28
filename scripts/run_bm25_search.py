@@ -19,7 +19,7 @@ exam, questions = exam_from_args(sys.argv)
 titles = {a["id"]: a["title"] for a in articles}
 
 index = BM25Index(articles)
-results = {q["id"]: index.top_k(q["question"], k=5) for q in questions}
+results = {q["id"]: index.top_k(q["question"], k=10) for q in questions}
 
 summary = summarize(results, questions, exam=exam, method="Keyword search (BM25)")
 print_report(summary, results, questions, titles)

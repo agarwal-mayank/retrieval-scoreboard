@@ -22,7 +22,7 @@ titles = {a["id"]: a["title"] for a in articles}
 embedder = OllamaEmbedder()
 article_vectors = load_or_build_article_vectors(embedder, articles, "runs/embeddings")
 query_vectors = embedder.embed_queries([q["question"] for q in questions])
-results = {q["id"]: top_k(v, article_vectors, k=5) for q, v in zip(questions, query_vectors)}
+results = {q["id"]: top_k(v, article_vectors, k=10) for q, v in zip(questions, query_vectors)}
 
 summary = summarize(results, questions, exam=exam, method=f"Vector search ({embedder.name})")
 summary["embedder"] = embedder.name
