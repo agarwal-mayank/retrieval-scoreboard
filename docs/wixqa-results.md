@@ -22,7 +22,7 @@ Each question names 1–3 correct articles (98 of the 400 have more than one). A
 
 Both rerankers re-order vector search's top 10, with each article trimmed to its first 400 words. Haiku: 1.5 seconds per question, US$0.249 for the 400 questions (2.08M input and 82k output tokens), 0 unreadable replies. qwen: 4.8 seconds per question, free, 0 unreadable replies.
 
-Re-running vector search moved its hit@1 by 0.3 points (31.5% → 31.2%) and MRR by 0.002; local embedding isn't perfectly repeatable run to run. The table shows the latest run.
+An earlier run a day before reported vector search at 31.5% hit@1 and MRR 0.443 (hybrid equal: 35.2%, 0.473). The rankings for a question or two changed between the two days: embedding the same questions twice within one session gives identical numbers and rankings, so the likely cause is tiny numeric differences after Ollama reloaded the model. BM25, which doesn't use embeddings, didn't change. All tables here use the latest run, which every reranker was also built on.
 
 **By question set (lenient MRR / nDCG@10)**
 
@@ -35,8 +35,8 @@ Re-running vector search moved its hit@1 by 0.3 points (31.5% → 31.2%) and MRR
 
 ## Findings
 
-- **Reranking is the biggest win on real data too.** Haiku reranking lifts hit@1 from 31.2% to 57.0% and MRR from 0.441 to 0.653, far ahead of any hybrid. The free local qwen reranker also beats every non-reranked method (MRR 0.559). A careful second judge matters more than how the shortlist is built.
-- **On real data, hybrid beats vector search alone**, the opposite of the synthetic exams. The 70/30 weighting, chosen before any run, scored best (MRR 0.481 vs 0.443). The best method depends on the data, so evaluate on data that looks like yours.
+- **Reranking is the biggest win on real data too.** Haiku reranking lifts hit@1 from 31.2% to 57.0% and MRR from 0.441 to 0.653, far ahead of any hybrid. The free local qwen reranker also beats every non-reranked method (MRR 0.559). Since only vector search's shortlist was reranked, whether the reranker matters more than how the shortlist is built is a hypothesis; reranking the hybrid's shortlist would test it.
+- **On real data, hybrid beats vector search alone**, the opposite of the synthetic exams. The 70/30 weighting, chosen before any run, scored best of the non-reranked methods (MRR 0.481 vs 0.441). The best method depends on the data, so evaluate on data that looks like yours.
 - **Real data is much harder:** MRR is about half of the synthetic exams' (0.44–0.48 vs about 0.9). 6,221 articles means far more lookalikes competing for the top 5.
 - **Chat-style questions are harder than tickets for every method**, and that's where hybrid helps most (vector 59.5% → 66.5% hit@5). Likely reasons: Simulated questions are shorter (median 12 words vs 18, so fewer clues to match), and fewer of them have several correct articles (27 vs 52), which under lenient marking means fewer ways to score a hit.
 
